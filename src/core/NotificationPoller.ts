@@ -23,7 +23,7 @@ class NotificationPoller {
     this.listener = listener
   }
 
-  start(options: { fetchOnStart: boolean }) {
+  start(options: { fetchOnStart?: boolean }) {
     const { fetchOnStart = true } = options
     if (fetchOnStart) {
       void this.sync({ all: true })

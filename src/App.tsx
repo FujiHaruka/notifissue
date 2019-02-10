@@ -1,26 +1,43 @@
 import React, { Component } from 'react'
-import logo from './logo.svg'
 import './App.css'
+import { Container, Header } from 'semantic-ui-react'
+import LayoutHeader from './components/LayoutHeader'
+import NotificationPoller from './core/NotificationPoller'
+import NotificationNotifier from './core/NotificationNotifier'
+import { GitHubResponse } from './types/GitHubResponse'
 
-class App extends Component {
+interface State {
+  notifications: GitHubResponse.Notification[]
+}
+
+class App extends Component<{}, State> {
   render() {
     return (
       <div className='App'>
-        <header className='App-header'>
-          <img src={logo} className='App-logo' alt='logo' />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className='App-link'
-            href='https://reactjs.org'
-            target='_blank'
-            rel='noopener noreferrer'>
-            Learn React
-          </a>
-        </header>
+        <LayoutHeader />
+
+        <Container text style={{ marginTop: '6em' }}>
+          <Header as='h1'>Semantic UI React Fixed Template</Header>
+        </Container>
       </div>
     )
+  }
+
+  poller = new NotificationPoller({
+    accessToken: process.env.ACCESS_TOKEN || '',
+    listener: new NotificationNotifier({}),
+  })
+
+  state = {
+    notifications: [],
+  }
+
+  componentDidMount() {
+    this.poller.start({})
+  }
+
+  componentWillUnmount() {
+    this.poller.stop()
   }
 }
 
