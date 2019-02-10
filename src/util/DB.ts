@@ -13,6 +13,9 @@ class DB {
   maxNotifications = 100
   notificationKey = 'notification:items'
   metaKey = 'notification:meta'
+  tokenKey = 'github:token'
+
+  // --- Notifications
 
   async getNotifications(): Promise<GitHubResponse.Notification[]> {
     const value = this.storage.getItem(this.notificationKey)
@@ -39,6 +42,8 @@ class DB {
     this.storage.setItem(this.notificationKey, JSON.stringify(reduced))
   }
 
+  // --- NotificationMeta
+
   async getNotificationMeta(): Promise<GitHubResponse.NotificationMeta | null> {
     const value = this.storage.getItem(this.metaKey)
     if (!value) {
@@ -49,6 +54,20 @@ class DB {
 
   async saveNotificationMeta(meta: GitHubResponse.NotificationMeta) {
     this.storage.setItem(this.metaKey, JSON.stringify(meta))
+  }
+
+  // --- Access token
+
+  async saveAccessToken(token: string) {
+    this.storage.setItem(this.tokenKey, token)
+  }
+
+  async getAccessToken() {
+    return this.storage.getItem(this.tokenKey)
+  }
+
+  async clearAccessToken() {
+    this.storage.removeItem(this.tokenKey)
   }
 }
 

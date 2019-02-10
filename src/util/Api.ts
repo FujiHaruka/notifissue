@@ -33,42 +33,55 @@ const asQuery = pipe(
   stringifyQuery,
 )
 
-// --- Modules
+// --- Module
 
-export const fetchNotifications = async (options: {
+export default class GitHubApi {
   accessToken: string
-  all?: boolean
-  since?: Date
-  before?: Date
-}) => {
-  const url = ApiUrls.NOTIFICATION_URL + '?' + asQuery(options)
-  const resp = await fetch(url)
-  const json = await resp.json()
 
-  const headersObj: any = {}
-  for await (const [key, value] of resp.headers.entries()) {
-    headersObj[key.toLowerCase()] = value
-  }
-  const headers = headersObj as GitHubResponse.NotificationHeader
-
-  const meta: GitHubResponse.NotificationMeta = {
-    lastModified: new Date(headers['last-modified']),
-    pollInterval: Number(headers['x-poll-interval']),
+  constructor(options: { accessToken: string }) {
+    this.accessToken = options.accessToken
   }
 
-  if (!resp.ok) {
-    if (resp.status === 304) {
-      // 304 Not Modified
-      return {
-        meta,
-        notifications: [] as GitHubResponse.Notification[],
-      }
+  async fetchNotifications(options: {
+    all?: boolean
+    since?: Date
+    before?: Date
+  }) {
+    const url =
+      ApiUrls.NOTIFICATION_URL +
+      '?' +
+      asQuery({
+        accessToken: this.accessToken,
+        ...options,
+      })
+    const resp = await fetch(url)
+    const json = await resp.json()
+
+    const headersObj: any = {}
+    for await (const [key, value] of resp.headers.entries()) {
+      headersObj[key.toLowerCase()] = value
     }
-    throw new Error(json.message)
-  }
+    const headers = headersObj as GitHubResponse.NotificationHeader
 
-  return {
-    meta,
-    notifications: json as GitHubResponse.Notification[],
+    const meta: GitHubResponse.NotificationMeta = {
+      lastModified: new Date(headers['last-modified']),
+      pollInterval: Number(headers['x-poll-interval']),
+    }
+
+    if (!resp.ok) {
+      if (resp.status === 304) {
+        // 304 Not Modified
+        return {
+          meta,
+          notifications: [] as GitHubResponse.Notification[],
+        }
+      }
+      throw new Error(json.message)
+    }
+
+    return {
+      meta,
+      notifications: json as GitHubResponse.Notification[],
+    }
   }
 }
