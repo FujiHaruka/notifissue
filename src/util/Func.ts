@@ -13,3 +13,6 @@ export const mapObjValue = (callbackfn: (value: any) => any) => (
   Object.entries(obj)
     .map(([key, value]) => [key, callbackfn(value)])
     .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {})
+
+export const sleep = (time: number) =>
+  new Promise((resolve) => setTimeout(resolve, time))
