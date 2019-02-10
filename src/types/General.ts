@@ -1,1 +1,1 @@
-type PlainObject = { [key: string]: any }
+export type PlainObject = { [key: string]: any }

@@ -1,3 +1,5 @@
+import { PlainObject } from '../types/General'
+
 export const mapObjKey = (callbackfn: (key: string) => string) => (
   obj: PlainObject,
 ): PlainObject =>

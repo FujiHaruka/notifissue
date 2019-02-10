@@ -2,10 +2,12 @@ import qs from 'qs'
 import { snake } from 'case'
 import { pipe } from 'ramda'
 import { mapObjKey } from './Func'
+import { PlainObject } from '../types/General'
+import { GitHubResponse } from '../types/GitHubResponse'
 
 // --- Constants
 
-const GITHUB_BASE_URL = 'https://https://api.github.com'
+const GITHUB_BASE_URL = 'https://api.github.com'
 const ApiUrls = {
   NOTIFICATION_URL: GITHUB_BASE_URL + '/notifications',
 }
@@ -35,15 +37,38 @@ const asQuery = pipe(
 
 export const fetchNotifications = async (options: {
   accessToken: string
-  all: boolean
-  since: Date
-  before: Date
-}): Promise<GitHubResponse.Notification[]> => {
+  all?: boolean
+  since?: Date
+  before?: Date
+}) => {
   const url = ApiUrls.NOTIFICATION_URL + '?' + asQuery(options)
   const resp = await fetch(url)
   const json = await resp.json()
+
+  const headersObj: any = {}
+  for await (const [key, value] of resp.headers.entries()) {
+    headersObj[key.toLowerCase()] = value
+  }
+  const headers = headersObj as GitHubResponse.NotificationHeader
+
+  const meta: GitHubResponse.NotificationMeta = {
+    lastModified: new Date(headers['last-modified']),
+    pollInterval: Number(headers['x-poll-interval']),
+  }
+
   if (!resp.ok) {
+    if (resp.status === 304) {
+      // 304 Not Modified
+      return {
+        meta,
+        notifications: [] as GitHubResponse.Notification[],
+      }
+    }
     throw new Error(json.message)
   }
-  return json as GitHubResponse.Notification[]
+
+  return {
+    meta,
+    notifications: json as GitHubResponse.Notification[],
+  }
 }

@@ -1,4 +1,4 @@
-namespace GitHubResponse {
+export namespace GitHubResponse {
   export type NotificationReason =
     | 'assign'
     | 'author'
@@ -56,5 +56,26 @@ namespace GitHubResponse {
     url: string
     html_url: string
     type: string
+  }
+
+  export interface NotificationHeader {
+    'cache-control': string
+    'content-type': string
+    /** for example: "Fri, 08 Feb 2019 14:29:55 GMT" */
+    'last-modified': string
+    'x-accepted-oauth-scopes': string
+    'x-github-media-type': string
+    'x-oauth-scopes': string
+    /** for example: 60 */
+    'x-poll-interval': string
+    'x-ratelimit-limit': string
+    'x-ratelimit-remainin': string
+    'x-ratelimit-reset': string
+  }
+
+  /** Meta data from response header */
+  export interface NotificationMeta {
+    lastModified: Date
+    pollInterval: number
   }
 }
