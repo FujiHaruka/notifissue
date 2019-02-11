@@ -5,9 +5,11 @@ import LayoutHeader from './components/LayoutHeader'
 import NotificationPoller from './core/NotificationPoller'
 import NotificationNotifier from './core/NotificationNotifier'
 import { GitHubResponse } from './types/GitHubResponse'
+import DB from './util/DB'
 
 interface State {
   notifications: GitHubResponse.Notification[]
+  meta: GitHubResponse.NotificationMeta | null
 }
 
 class App extends Component<{}, State> {
@@ -23,21 +25,35 @@ class App extends Component<{}, State> {
     )
   }
 
-  poller = new NotificationPoller({
-    accessToken: process.env.ACCESS_TOKEN || '',
-    listener: new NotificationNotifier({}),
-  })
+  poller?: NotificationPoller
 
   state = {
     notifications: [],
+    meta: null,
   }
 
-  componentDidMount() {
+  onData(data: {
+    notifications: GitHubResponse.Notification[]
+    meta: GitHubResponse.NotificationMeta | null
+  }) {
+    this.setState(data)
+  }
+
+  async componentDidMount() {
+    // FIXME: DB を複数箇所で初期化している
+    const db = new DB()
+    const accessToken =
+      (await db.getAccessToken()) || process.env.ACCESS_TOKEN || ''
+    this.poller = new NotificationPoller({
+      accessToken,
+      listener: new NotificationNotifier({}),
+      onData: this.onData.bind(this),
+    })
     this.poller.start({})
   }
 
   componentWillUnmount() {
-    this.poller.stop()
+    this.poller && this.poller.stop()
   }
 }
 
