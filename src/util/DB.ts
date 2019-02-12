@@ -1,5 +1,7 @@
 import { GitHubResponse } from '../types/GitHubResponse'
 import { uniqBy, sort } from 'ramda'
+import { NotificationMeta } from '../types/Core'
+import { TypedJSON } from './Func'
 
 const uniqById = uniqBy((n: GitHubResponse.Notification) => n.id)
 const sortByUpdate = sort(
@@ -10,7 +12,7 @@ const sortByUpdate = sort(
 class DB {
   storage = window.localStorage
 
-  maxNotifications = 100
+  maxNotifications = 500
   notificationKey = 'notification:items'
   metaKey = 'notification:meta'
   tokenKey = 'github:token'
@@ -22,14 +24,14 @@ class DB {
     if (!value) {
       return []
     }
-    return JSON.parse(value) as GitHubResponse.Notification[]
+    return TypedJSON.parse(value) as GitHubResponse.Notification[]
   }
 
   async saveNotifications(notifications: GitHubResponse.Notification[]) {
     const saved = await this.getNotifications()
     const saving = uniqById([...notifications, ...saved])
     const sorted = sortByUpdate(saving)
-    this.storage.setItem(this.notificationKey, JSON.stringify(sorted))
+    this.storage.setItem(this.notificationKey, TypedJSON.stringify(sorted))
   }
 
   async cleanUpOldNotifications() {
@@ -39,21 +41,21 @@ class DB {
     }
     // updated_at 順にソートされている
     const reduced = notifications.slice(0, this.maxNotifications)
-    this.storage.setItem(this.notificationKey, JSON.stringify(reduced))
+    this.storage.setItem(this.notificationKey, TypedJSON.stringify(reduced))
   }
 
   // --- NotificationMeta
 
-  async getNotificationMeta(): Promise<GitHubResponse.NotificationMeta | null> {
+  async getNotificationMeta(): Promise<NotificationMeta | null> {
     const value = this.storage.getItem(this.metaKey)
     if (!value) {
       return null
     }
-    return JSON.parse(value) as GitHubResponse.NotificationMeta
+    return TypedJSON.parse(value) as NotificationMeta
   }
 
-  async saveNotificationMeta(meta: GitHubResponse.NotificationMeta) {
-    this.storage.setItem(this.metaKey, JSON.stringify(meta))
+  async saveNotificationMeta(meta: NotificationMeta) {
+    this.storage.setItem(this.metaKey, TypedJSON.stringify(meta))
   }
 
   // --- Access token
@@ -68,6 +70,14 @@ class DB {
 
   async clearAccessToken() {
     this.storage.removeItem(this.tokenKey)
+  }
+
+  // --- Debug
+
+  registerGlobal() {
+    Object.assign(window, {
+      db: this,
+    })
   }
 }
 

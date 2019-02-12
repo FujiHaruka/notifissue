@@ -1,54 +1,34 @@
-import { GitHubResponse } from '../types/GitHubResponse'
-
-const timeAfterSeconds = (seconds: number) =>
-  new Date(new Date().getTime() + seconds * 1000)
+import { NotificationMeta } from '../types/Core'
 
 class NotificationTrigger {
   private timer = -1
-  private interval = 1000
-  private nextDate: Date | null = null
 
   private task: () => any
-  private taskDone = true
+  private taskWaiting = false
 
-  constructor(options: { task: () => any }) {
-    this.task = options.task
+  constructor(task: () => any) {
+    this.task = task
   }
 
-  start() {
-    this.startSyncTimer()
+  setNextTime(meta: NotificationMeta) {
+    this.stopTimer()
+    this.taskWaiting = true
+
+    const { lastFetched, pollInterval } = meta
+    const time =
+      lastFetched.getTime() + pollInterval * 1000 - new Date().getTime()
+    this.timer = window.setTimeout(() => {
+      if (!this.taskWaiting) return
+      this.taskWaiting = false
+      console.log('[NotificationTrigger] task triggered')
+      this.task()
+    }, time)
+    console.log(`[NotificationTrigger] set next time after ${time} ms`)
   }
 
-  stop() {
-    this.stopSyncTimer()
-  }
-
-  /**
-   * 現在時刻を基準にmetaのpollInterval秒後に設定
-   */
-  setNextTimeByMeta(meta: GitHubResponse.NotificationMeta) {
-    this.setNextTime(timeAfterSeconds(meta.pollInterval))
-  }
-
-  setNextTime(date: Date) {
-    this.taskDone = false
-    this.nextDate = date
-  }
-
-  private startSyncTimer() {
-    this.stopSyncTimer()
-    this.timer = window.setInterval(() => {
-      if (this.taskDone || !this.nextDate) return
-      const shouldDoTask = this.nextDate.getTime() < new Date().getTime()
-      if (shouldDoTask) {
-        this.taskDone = true
-        this.task()
-      }
-    }, this.interval)
-  }
-
-  private stopSyncTimer() {
+  stopTimer() {
     clearInterval(this.timer)
+    this.taskWaiting = false
   }
 }
 

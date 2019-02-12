@@ -72,10 +72,4 @@ export namespace GitHubResponse {
     'x-ratelimit-remainin': string
     'x-ratelimit-reset': string
   }
-
-  /** Meta data from response header */
-  export interface NotificationMeta {
-    lastModified: Date
-    pollInterval: number
-  }
 }

@@ -1,14 +1,6 @@
 import GitHubApi from '../util/Api'
 import DB from '../util/DB'
-import { GitHubResponse } from '../types/GitHubResponse'
-import { NotificationListener } from '../types/Core'
-
-interface UI extends NotificationListener {
-  onData: (data: {
-    notifications: GitHubResponse.Notification[]
-    meta: GitHubResponse.NotificationMeta | null
-  }) => void
-}
+import { HubUI } from '../types/Core'
 
 /**
  * Data hub to connect Request, DB, UI
@@ -16,13 +8,14 @@ interface UI extends NotificationListener {
 export default class Hub {
   private api: GitHubApi
   private db: DB
-  private ui: UI
+  private ui: HubUI
 
   readyToken = false
 
-  constructor(ui: UI) {
+  constructor(ui: HubUI) {
     this.api = new GitHubApi({ accessToken: '' })
     this.db = new DB()
+    this.db.registerGlobal() // for debug
     this.ui = ui
   }
 
@@ -31,10 +24,18 @@ export default class Hub {
     this.api.accessToken = token
   }
 
-  async syncFromAPI(options: { all: boolean }) {
-    let { meta, notifications } = await this.api.fetchNotifications(options)
-    if (!options.all && notifications.length > 0) {
-      this.ui.onNewNotifications(notifications)
+  async syncFromAPI(options?: { all: boolean }) {
+    const { all = false } = options || {}
+    let { meta, notifications } = await this.api.fetchNotifications({ all })
+    if (!all && notifications.length > 0) {
+      const existings = await this.db.getNotifications()
+      const existingIds: Set<string> = existings
+        .map((n) => n.id)
+        .reduce((set, id) => set.add(id), new Set())
+      const newNotifications = notifications.filter(
+        (n) => !existingIds.has(n.id),
+      )
+      this.ui.onNewNotifications(newNotifications)
     }
     if (notifications.length > 0) {
       await this.db.saveNotifications(notifications)
@@ -51,10 +52,9 @@ export default class Hub {
 
   async restoreFromDB() {
     const accessToken = await this.db.getAccessToken()
-    if (accessToken) {
-      this.api.accessToken = accessToken
-      this.readyToken = true
-    }
+    if (!accessToken) return
+    this.api.accessToken = accessToken
+    this.readyToken = true
     const notifications = await this.db.getNotifications()
     const meta = await this.db.getNotificationMeta()
     this.ui.onData({

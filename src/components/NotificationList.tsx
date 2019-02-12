@@ -7,7 +7,7 @@ const NotificationList = (props: {
 }) => (
   <List celled>
     {props.notifications.map((notification) => (
-      <List.Item>
+      <List.Item key={notification.id}>
         <List.Content>
           <List.Header>{notification.subject.title}</List.Header>
           {notification.subject.url}

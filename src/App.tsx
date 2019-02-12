@@ -2,58 +2,80 @@ import React, { Component } from 'react'
 import './App.css'
 import { Container, Header } from 'semantic-ui-react'
 import LayoutHeader from './components/LayoutHeader'
-import NotificationPoller from './core/NotificationPoller'
+import NotificationTrigger from './core/NotificationTrigger'
 import NotificationNotifier from './core/NotificationNotifier'
+import Hub from './core/Hub'
 import { GitHubResponse } from './types/GitHubResponse'
-import DB from './util/DB'
+import NotificationList from './components/NotificationList'
+import { NotificationMeta } from './types/Core'
 
 interface State {
   notifications: GitHubResponse.Notification[]
-  meta: GitHubResponse.NotificationMeta | null
+  meta?: NotificationMeta | null
 }
 
 class App extends Component<{}, State> {
   render() {
+    const { notifications, meta } = this.state
     return (
       <div className='App'>
         <LayoutHeader />
 
-        <Container text style={{ marginTop: '6em' }}>
-          <Header as='h1'>Semantic UI React Fixed Template</Header>
+        <Container text style={{ paddingTop: '6em' }}>
+          <Header as='h1'>GitHub notification timeline</Header>
+          <p>{JSON.stringify(meta)}</p>
+          <NotificationList notifications={notifications} />
         </Container>
       </div>
     )
   }
 
-  poller?: NotificationPoller
+  trigger!: NotificationTrigger
+  hub!: Hub
+  notifier!: NotificationNotifier
 
-  state = {
+  state: State = {
     notifications: [],
     meta: null,
   }
 
-  onData(data: {
-    notifications: GitHubResponse.Notification[]
-    meta: GitHubResponse.NotificationMeta | null
-  }) {
-    this.setState(data)
-  }
-
   async componentDidMount() {
-    // FIXME: DB を複数箇所で初期化している
-    const db = new DB()
-    const accessToken =
-      (await db.getAccessToken()) || process.env.ACCESS_TOKEN || ''
-    this.poller = new NotificationPoller({
-      accessToken,
-      listener: new NotificationNotifier({}),
-      onData: this.onData.bind(this),
+    this.notifier = new NotificationNotifier({})
+    this.hub = new Hub({
+      onData: (data: {
+        notifications: GitHubResponse.Notification[]
+        meta: NotificationMeta | null
+      }) => this.setState(data),
+      onNewNotifications: (coming: GitHubResponse.Notification[]) => {
+        this.notifier.onNewNotifications(coming)
+      },
     })
-    this.poller.start({})
+    this.trigger = new NotificationTrigger(async () => {
+      await this.hub.syncFromAPI()
+      this.trigger.setNextTime(this.state.meta!)
+    })
+
+    await this.hub.restoreFromDB()
+    // TODO: register token from UI
+    await this.hub.registerAccessToken()
+
+    this.startPolling()
   }
 
   componentWillUnmount() {
-    this.poller && this.poller.stop()
+    this.stopPolling()
+  }
+
+  async startPolling() {
+    if (!this.state.meta) {
+      // metaが更新される
+      await this.hub.syncFromAPI({ all: true })
+    }
+    this.trigger.setNextTime(this.state.meta!)
+  }
+
+  stopPolling() {
+    this.trigger.stopTimer()
   }
 }
 

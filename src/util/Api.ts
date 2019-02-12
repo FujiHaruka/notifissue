@@ -4,6 +4,7 @@ import { pipe } from 'ramda'
 import { mapObjKey } from './Func'
 import { PlainObject } from '../types/General'
 import { GitHubResponse } from '../types/GitHubResponse'
+import { NotificationMeta } from '../types/Core'
 
 // --- Constants
 
@@ -63,8 +64,9 @@ export default class GitHubApi {
     }
     const headers = headersObj as GitHubResponse.NotificationHeader
 
-    const meta: GitHubResponse.NotificationMeta = {
+    const meta: NotificationMeta = {
       lastModified: new Date(headers['last-modified']),
+      lastFetched: new Date(),
       pollInterval: Number(headers['x-poll-interval']),
     }
 

@@ -16,3 +16,25 @@ export const mapObjValue = (callbackfn: (value: any) => any) => (
 
 export const sleep = (time: number) =>
   new Promise((resolve) => setTimeout(resolve, time))
+
+const DATE = 'Date'
+const replacer = function(key: string, value: any): any {
+  const rawValue = this[key]
+  if (rawValue instanceof Date) {
+    return {
+      $type: DATE,
+      $value: rawValue.getTime(),
+    }
+  }
+  return value
+}
+const reviver = function(key: string, value: any) {
+  if (value && value.$type === DATE) {
+    return new Date(value.$value)
+  }
+  return value
+}
+export const TypedJSON = {
+  stringify: (value: any) => JSON.stringify(value, replacer),
+  parse: (text: string) => JSON.parse(text, reviver),
+}
