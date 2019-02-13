@@ -15,8 +15,10 @@ class NotificationTrigger {
     this.taskWaiting = true
 
     const { lastFetched, pollInterval } = meta
-    const time =
-      lastFetched.getTime() + pollInterval * 1000 - new Date().getTime()
+    const time = Math.max(
+      lastFetched.getTime() + pollInterval * 1000 - new Date().getTime(),
+      0,
+    )
     this.timer = window.setTimeout(() => {
       if (!this.taskWaiting) return
       this.taskWaiting = false

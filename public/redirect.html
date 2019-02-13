@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title></title>
+</head>
+<style>
+#redirect {
+  margin: 16px;
+  color: #aaa;
+}
+</style>
+<body>
+  <p id="redirect">Redirecting...</p>
+</body>
+<script>
+var apiUrl = decodeURIComponent(window.location.search.match(/url=([^&]+)/)[1])
+var token = window.localStorage.getItem('github:token')
+window.fetch(apiUrl + '?access_token=' + token)
+  .then(function (resp) {
+    return resp.json()
+  })
+  .then(function (json) {
+    var htmlUrl = json.html_url
+    window.location = htmlUrl
+  })
+</script>
+</html>

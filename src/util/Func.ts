@@ -1,4 +1,5 @@
 import { PlainObject } from '../types/General'
+import moment from 'moment'
 
 export const mapObjKey = (callbackfn: (key: string) => string) => (
   obj: PlainObject,
@@ -16,6 +17,9 @@ export const mapObjValue = (callbackfn: (value: any) => any) => (
 
 export const sleep = (time: number) =>
   new Promise((resolve) => setTimeout(resolve, time))
+
+export const formatDate = (date: Date | string) =>
+  moment(date).format('YYYY/MM/DD HH:mm')
 
 const DATE = 'Date'
 const replacer = function(key: string, value: any): any {

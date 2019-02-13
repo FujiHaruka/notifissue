@@ -1,12 +1,12 @@
 import React from 'react'
-import { Container, Dropdown, Image, Menu } from 'semantic-ui-react'
+import { Container, Image, Menu } from 'semantic-ui-react'
 
 const LayoutHeader = () => (
   <Menu fixed='top' inverted>
     <Container>
       <Menu.Item header>
         <Image size='mini' src='/logo.png' style={{ marginRight: '1.5em' }} />
-        Issue Notification
+        Notissue: GitHub notification timeline
       </Menu.Item>
       {/* <Menu.Item as='a'>Home</Menu.Item>
 

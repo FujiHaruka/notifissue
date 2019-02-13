@@ -1,0 +1,20 @@
+.NotificationListItem {
+}
+
+.NotificationListItem-desc {
+  margin-top: 4px;
+  font-size: smaller;
+}
+
+.NotificationListItem-desc-item {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.ui[class*="very relaxed"].list>.item.NotificationListItem {
+  padding-top: .85714286em;
+}
+
+.NotificationList {
+  background: white;
+}

@@ -22,8 +22,6 @@ class App extends Component<{}, State> {
         <LayoutHeader />
 
         <Container text style={{ paddingTop: '6em' }}>
-          <Header as='h1'>GitHub notification timeline</Header>
-          <p>{JSON.stringify(meta)}</p>
           <NotificationList notifications={notifications} />
         </Container>
       </div>
@@ -57,7 +55,7 @@ class App extends Component<{}, State> {
 
     await this.hub.restoreFromDB()
     // TODO: register token from UI
-    await this.hub.registerAccessToken()
+    // await this.hub.registerAccessToken()
 
     this.startPolling()
   }
