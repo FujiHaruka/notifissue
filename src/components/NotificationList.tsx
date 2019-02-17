@@ -1,8 +1,7 @@
 import React from 'react'
 import { List, Label } from 'semantic-ui-react'
 import { GitHubResponse } from '../types/GitHubResponse'
-import qs from 'querystring'
-import { formatDate } from '../util/Func'
+import { formatDate, findHtmlUrl } from '../util/Func'
 import './NotificationList.css'
 
 const ListItemDesc = (props: { children: any }) => (
@@ -10,18 +9,19 @@ const ListItemDesc = (props: { children: any }) => (
 )
 
 const ListItem = (props: { notification: GitHubResponse.Notification }) => {
-  const { subject, updated_at, unread, repository } = props.notification
-  const { title, url, type } = subject
+  const { notification } = props
+  const { subject, updated_at, unread, repository, reason } = notification
+  const { title, type } = subject
+  const htmlUrl = findHtmlUrl(notification)
   return (
     <List.Item
       className='NotificationListItem'
       as='a'
       target='_blank'
-      href={`redirect.html?${qs.stringify({
-        url,
-      })}`}>
+      href={htmlUrl}>
       <List.Content floated='right'>
         <Label tag>{type}</Label>
+        <Label>{reason}</Label>
       </List.Content>
       <List.Icon
         name={unread ? 'circle outline' : 'check circle outline'}

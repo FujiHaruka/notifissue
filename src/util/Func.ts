@@ -45,45 +45,42 @@ export const TypedJSON = {
   parse: (text: string) => JSON.parse(text, reviver),
 }
 
+const origins = {
+  api: 'https://api.github.com',
+  html: 'https://github.com',
+}
 const pathParsers = {
-  pullRequestApi: new PathParser(
-    'https://api.github.com/repos/:owner/:repo/pulls/:number',
-  ),
-  pullRequestHtml: new PathParser(
-    'https://github.com/:owner/:repo/pulls/:number',
-  ),
-  issueApi: new PathParser(
-    'https://api.github.com/repos/:owner/:repo/issues/:number',
-  ),
-  issueHtml: new PathParser(
-    'https://github.com/:owner/:repo/issues/:number', //
-  ),
+  pullRequestApi: new PathParser('/repos/:owner/:repo/pulls/:number'),
+  pullRequestHtml: new PathParser('/:owner/:repo/pull/:number'),
+  issueApi: new PathParser('/repos/:owner/:repo/issues/:number'),
+  issueHtml: new PathParser('/:owner/:repo/issues/:number'),
 }
 export const findHtmlUrl = (
   notification: GitHubResponse.Notification,
 ): string => {
   const { type, url } = notification.subject
+  const { pathname } = new URL(url)
   const repositoryUrl = notification.repository.html_url // マッチしないとき用の URL
   switch (type) {
     case 'PullRequest': {
-      const matched = pathParsers.pullRequestApi.test(url)
+      const matched = pathParsers.pullRequestApi.test(pathname)
       if (!matched) {
         console.error(
           `Something wrong on finding HTML URL. Type is "PullRequest", but given URL is ${url}`,
         )
         return repositoryUrl
       }
-      return pathParsers.pullRequestHtml.build(matched)
+      return origins.html + pathParsers.pullRequestHtml.build(matched)
     }
     case 'Issue': {
-      const matched = pathParsers.issueApi.test(url)
+      const matched = pathParsers.issueApi.test(pathname)
       if (!matched) {
         console.error(
           `Something wrong on finding HTML URL. Type is "Issue", but given URL is ${url}`,
         )
         return repositoryUrl
       }
-      return pathParsers.issueHtml.build(matched)
+      return origins.html + pathParsers.issueHtml.build(matched)
     }
     default:
       return repositoryUrl
