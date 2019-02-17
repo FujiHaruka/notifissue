@@ -5,10 +5,12 @@ import qs from 'querystring'
 import { formatDate } from '../util/Func'
 import './NotificationList.css'
 
-const NotificationListItem = (props: {
-  notification: GitHubResponse.Notification
-}) => {
-  const { subject, updated_at, unread } = props.notification
+const ListItemDesc = (props: { children: any }) => (
+  <span className='NotificationListItem-desc-item'>{props.children}</span>
+)
+
+const ListItem = (props: { notification: GitHubResponse.Notification }) => {
+  const { subject, updated_at, unread, repository } = props.notification
   const { title, url, type } = subject
   return (
     <List.Item
@@ -28,9 +30,8 @@ const NotificationListItem = (props: {
       <List.Content>
         <List.Header>{title}</List.Header>
         <List.Description className='NotificationListItem-desc'>
-          <span className='NotificationListItem-desc-item'>
-            At {formatDate(updated_at)}
-          </span>
+          <ListItemDesc>{repository.full_name}</ListItemDesc>
+          <ListItemDesc>At {formatDate(updated_at)}</ListItemDesc>
         </List.Description>
       </List.Content>
     </List.Item>
@@ -47,7 +48,7 @@ const NotificationList = (props: {
     selection
     className='NotificationList'>
     {props.notifications.map((notification) => (
-      <NotificationListItem key={notification.id} notification={notification} />
+      <ListItem key={notification.id} notification={notification} />
     ))}
   </List>
 )

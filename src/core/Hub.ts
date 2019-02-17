@@ -15,8 +15,14 @@ export default class Hub {
   constructor(ui: HubUI) {
     this.api = new GitHubApi({ accessToken: '' })
     this.db = new DB()
-    this.db.registerGlobal() // for debug
     this.ui = ui
+    // For debug
+    Object.assign(window, {
+      app: {
+        db: this.db,
+        api: this.api,
+      },
+    })
   }
 
   async registerAccessToken(token: string) {
@@ -25,9 +31,11 @@ export default class Hub {
   }
 
   async syncFromAPI(options?: { all: boolean }) {
-    const { all = false } = options || {}
+    // unread 更新のために all true にする...？
+    const { all = true } = options || {}
     let { meta, notifications } = await this.api.fetchNotifications({ all })
     if (!all && notifications.length > 0) {
+      // TODO: update が無視される
       const existings = await this.db.getNotifications()
       const existingIds: Set<string> = existings
         .map((n) => n.id)

@@ -71,14 +71,6 @@ class DB {
   async clearAccessToken() {
     this.storage.removeItem(this.tokenKey)
   }
-
-  // --- Debug
-
-  registerGlobal() {
-    Object.assign(window, {
-      db: this,
-    })
-  }
 }
 
 export default DB
