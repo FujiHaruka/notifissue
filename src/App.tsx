@@ -8,21 +8,27 @@ import Hub from './core/Hub'
 import { GitHubResponse } from './types/GitHubResponse'
 import NotificationList from './components/NotificationList'
 import { NotificationMeta } from './types/Core'
+import Welcome from './components/Welcome'
 
 interface State {
   notifications: GitHubResponse.Notification[]
   meta?: NotificationMeta | null
+  ready: boolean
+  readyToken: boolean
 }
 
 class App extends Component<{}, State> {
   render() {
-    const { notifications, meta } = this.state
+    const { notifications, ready, readyToken } = this.state
     return (
       <div className='App'>
         <LayoutHeader />
 
         <Container text style={{ paddingTop: '6em' }}>
-          <NotificationList notifications={notifications} />
+          {ready && readyToken && (
+            <NotificationList notifications={notifications} />
+          )}
+          {ready && <Welcome onRegister={this.onRegister} />}
         </Container>
       </div>
     )
@@ -35,7 +41,11 @@ class App extends Component<{}, State> {
   state: State = {
     notifications: [],
     meta: null,
+    ready: false,
+    readyToken: false,
   }
+
+  // --- Lifecycles
 
   async componentDidMount() {
     this.notifier = new NotificationNotifier({})
@@ -61,12 +71,17 @@ class App extends Component<{}, State> {
     // TODO: register token from UI
     // await this.hub.registerAccessToken()
 
-    void this.startPolling()
+    if (this.hub.readyToken) {
+      void this.startPolling()
+    }
+    this.setState({ ready: true })
   }
 
   componentWillUnmount() {
     this.stopPolling()
   }
+
+  // --- Polling
 
   async startPolling() {
     if (!this.state.meta) {
@@ -78,6 +93,13 @@ class App extends Component<{}, State> {
 
   stopPolling() {
     this.trigger.stopTimer()
+  }
+
+  // --- Callbacks
+
+  onRegister = async (token: string) => {
+    await this.hub.registerAccessToken(token)
+    this.setState({ readyToken: true })
   }
 }
 

@@ -51,8 +51,8 @@ export default class Hub {
   async restoreFromDB() {
     const accessToken = await this.db.getAccessToken()
     if (!accessToken) return
-    this.api.accessToken = accessToken
     this.readyToken = true
+    this.api.accessToken = accessToken
     const notifications = await this.db.getNotifications()
     const meta = await this.db.getNotificationMeta()
     this.ui.onData({
