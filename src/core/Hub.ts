@@ -70,12 +70,15 @@ export default class Hub {
       (obj, n) => Object.assign(obj, { [n.id]: n }),
       {},
     )
-    const newNotifications = notifications.filter(({ id, updated_at }) => {
-      const exists = existings[id]
-      if (!exists) return true
-      if (exists.updated_at !== updated_at) return true
-      return false
-    })
+    const newNotifications = notifications.filter(
+      ({ id, updated_at, unread }) => {
+        if (!unread) return false // 既読は無視
+        const exists = existings[id]
+        if (!exists) return true // 新規なので
+        if (exists.updated_at !== updated_at) return true // 更新されたので
+        return false
+      },
+    )
     return newNotifications
   }
 }
