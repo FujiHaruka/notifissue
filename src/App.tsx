@@ -44,12 +44,16 @@ class App extends Component<{}, State> {
         notifications: GitHubResponse.Notification[]
         meta: NotificationMeta | null
       }) => this.setState(data),
-      onNewNotifications: (coming: GitHubResponse.Notification[]) => {
-        this.notifier.onNewNotifications(coming)
+      onNewNotifications: async (coming: GitHubResponse.Notification[]) => {
+        await this.notifier.onNewNotifications(coming)
       },
     })
     this.trigger = new NotificationTrigger(async () => {
-      await this.hub.syncFromAPI()
+      try {
+        await this.hub.syncFromAPI()
+      } catch (e) {
+        console.error(e)
+      }
       this.trigger.setNextTime(this.state.meta!)
     })
 
@@ -57,7 +61,7 @@ class App extends Component<{}, State> {
     // TODO: register token from UI
     // await this.hub.registerAccessToken()
 
-    this.startPolling()
+    void this.startPolling()
   }
 
   componentWillUnmount() {
