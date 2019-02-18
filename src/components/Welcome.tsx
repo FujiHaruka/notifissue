@@ -26,6 +26,7 @@ const Welcome = (props: { onRegister: (token: string) => Promise<void> }) => {
               primary
               loading={loading}
               onClick={async (e) => {
+                if (!token) return
                 setLoading(true)
                 try {
                   await props.onRegister(token)
