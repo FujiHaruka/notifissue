@@ -20,8 +20,10 @@ const ListItem = (props: { notification: GitHubResponse.Notification }) => {
       target='_blank'
       href={htmlUrl}>
       <List.Content floated='right'>
-        <Label tag>{type}</Label>
-        <Label>{reason}</Label>
+        <Label tag>
+          {type}
+          <Label.Detail>{reason}</Label.Detail>
+        </Label>
       </List.Content>
       <List.Icon
         name={unread ? 'circle outline' : 'check circle outline'}

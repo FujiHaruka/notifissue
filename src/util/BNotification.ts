@@ -5,7 +5,7 @@ const isBrowserNotificationSupported = () => 'Notification' in window
  */
 export default class BNotification {
   isGranted = false
-  private lifetime = 5000
+  private lifetime = 10000
 
   spawnNotification(options: { title: string; body: string }) {
     if (!this.isGranted) {

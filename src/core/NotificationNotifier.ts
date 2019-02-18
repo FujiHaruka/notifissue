@@ -36,12 +36,15 @@ export default class NotificationNotifier implements NotificationListener {
     const notifications = coming.filter((notification) =>
       this.reasons.includes(notification.reason),
     )
+    if (notifications.length > 0) {
+      console.log(`${notifications.length} new notifications`)
+    }
     for (const notification of notifications) {
       this.bNotification.spawnNotification({
         title: notification.subject.type,
         body: notification.subject.title,
       })
-      await sleep(500)
+      await sleep(3000)
     }
   }
 }
