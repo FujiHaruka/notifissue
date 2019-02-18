@@ -28,7 +28,7 @@ class App extends Component<{}, State> {
           {ready && readyToken && (
             <NotificationList notifications={notifications} />
           )}
-          {ready && <Welcome onRegister={this.onRegister} />}
+          {ready && !readyToken && <Welcome onRegister={this.onRegister} />}
         </Container>
       </div>
     )
@@ -98,8 +98,10 @@ class App extends Component<{}, State> {
   // --- Callbacks
 
   onRegister = async (token: string) => {
+    // TODO: token validation request
     await this.hub.registerAccessToken(token)
     this.setState({ readyToken: true })
+    void this.startPolling()
   }
 }
 

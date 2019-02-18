@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Header, Image, Segment, Input, Button } from 'semantic-ui-react'
 
-const Welcome = (props: { onRegister: (token: string) => void }) => {
+const Welcome = (props: { onRegister: (token: string) => Promise<void> }) => {
+  const [token, setToken] = useState('')
+  const [loading, setLoading] = useState(false)
   return (
     <>
       <Header as='h1' icon textAlign='center'>
@@ -20,11 +22,27 @@ const Welcome = (props: { onRegister: (token: string) => void }) => {
         <Header as='h3'>Get started</Header>
         <Input
           action={
-            <Button primary loading={false}>
+            <Button
+              primary
+              loading={loading}
+              onClick={async (e) => {
+                setLoading(true)
+                try {
+                  await props.onRegister(token)
+                } catch (e) {
+                  // TODO: Show message
+                  console.error(e)
+                } finally {
+                  setLoading(false)
+                }
+              }}>
               Save
             </Button>
           }
           placeholder='GitHub Access Token'
+          onChange={(e, { value }) => {
+            setToken(value)
+          }}
         />
       </Segment>
     </>
