@@ -13,9 +13,16 @@ class DB {
   storage = window.localStorage
 
   maxNotifications = 500
-  notificationKey = 'notification:items'
-  metaKey = 'notification:meta'
+  notificationKey = 'github:notification:items'
+  metaKey = 'github:notification:meta'
   tokenKey = 'github:token'
+  userKey = 'github:user'
+
+  // --- General
+
+  async drop() {
+    this.storage.clear()
+  }
 
   // --- Notifications
 
@@ -70,6 +77,24 @@ class DB {
 
   async clearAccessToken() {
     this.storage.removeItem(this.tokenKey)
+  }
+
+  // --- User
+
+  async saveUser(user: GitHubResponse.User) {
+    this.storage.setItem(this.userKey, TypedJSON.stringify(user))
+  }
+
+  async getUser() {
+    const value = this.storage.getItem(this.userKey)
+    if (!value) {
+      return null
+    }
+    return TypedJSON.parse(value) as GitHubResponse.User
+  }
+
+  async clearUser() {
+    this.storage.removeItem(this.userKey)
   }
 }
 

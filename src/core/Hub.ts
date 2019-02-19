@@ -26,9 +26,21 @@ export default class Hub {
     })
   }
 
-  async registerAccessToken(token: string) {
-    await this.db.saveAccessToken(token)
+  async register(token: string): Promise<boolean> {
+    // validate and save user
     this.api.accessToken = token
+    const user = await this.api.fetchAuthenticatedUser()
+    if (!user) {
+      this.api.accessToken = ''
+      return false
+    }
+    await this.db.saveUser(user)
+    await this.db.saveAccessToken(token)
+    return true
+  }
+
+  async unregister() {
+    await this.db.drop()
   }
 
   async syncFromAPI(options?: { all: boolean }) {

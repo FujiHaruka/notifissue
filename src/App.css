@@ -10,3 +10,8 @@
 .ui.segment.Welcome-segment {
   margin-top: 3em;
 }
+
+.ui.message.Welcome-input-error {
+  width: 248px;
+  margin: auto;
+}

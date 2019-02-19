@@ -1,7 +1,18 @@
 import React, { useState } from 'react'
-import { Header, Image, Segment, Input, Button } from 'semantic-ui-react'
+import {
+  Header,
+  Image,
+  Segment,
+  Input,
+  Button,
+  Message,
+} from 'semantic-ui-react'
 
-const Welcome = (props: { onRegister: (token: string) => Promise<void> }) => {
+const Welcome = (props: {
+  onRegister: (token: string) => Promise<void>
+  errorToken: boolean
+}) => {
+  const { onRegister, errorToken } = props
   const [token, setToken] = useState('')
   const [loading, setLoading] = useState(false)
   return (
@@ -20,6 +31,13 @@ const Welcome = (props: { onRegister: (token: string) => Promise<void> }) => {
       </Segment>
       <Segment className='Welcome-segment' basic textAlign='center'>
         <Header as='h3'>Get started</Header>
+        <Message
+          negative
+          className='Welcome-input-error'
+          size='mini'
+          hidden={!errorToken}>
+          <Message.Header>Invalid access token.</Message.Header>
+        </Message>
         <Input
           action={
             <Button
@@ -28,14 +46,8 @@ const Welcome = (props: { onRegister: (token: string) => Promise<void> }) => {
               onClick={async (e) => {
                 if (!token) return
                 setLoading(true)
-                try {
-                  await props.onRegister(token)
-                } catch (e) {
-                  // TODO: Show message
-                  console.error(e)
-                } finally {
-                  setLoading(false)
-                }
+                await onRegister(token)
+                setLoading(false)
               }}>
               Save
             </Button>

@@ -15,11 +15,12 @@ interface State {
   meta?: NotificationMeta | null
   ready: boolean
   readyToken: boolean
+  errorToken: boolean
 }
 
 class App extends Component<{}, State> {
   render() {
-    const { notifications, ready, readyToken } = this.state
+    const { notifications, ready, readyToken, errorToken } = this.state
     return (
       <div className='App'>
         <LayoutHeader />
@@ -28,7 +29,9 @@ class App extends Component<{}, State> {
           {ready && readyToken && (
             <NotificationList notifications={notifications} />
           )}
-          {ready && !readyToken && <Welcome onRegister={this.onRegister} />}
+          {ready && !readyToken && (
+            <Welcome onRegister={this.onRegister} errorToken={errorToken} />
+          )}
         </Container>
       </div>
     )
@@ -43,6 +46,7 @@ class App extends Component<{}, State> {
     meta: null,
     ready: false,
     readyToken: false,
+    errorToken: false,
   }
 
   // --- Lifecycles
@@ -68,8 +72,6 @@ class App extends Component<{}, State> {
     })
 
     await this.hub.restoreFromDB()
-    // TODO: register token from UI
-    // await this.hub.registerAccessToken()
 
     if (this.hub.readyToken) {
       void this.startPolling()
@@ -98,10 +100,13 @@ class App extends Component<{}, State> {
   // --- Callbacks
 
   onRegister = async (token: string) => {
-    // TODO: token validation request
-    await this.hub.registerAccessToken(token)
-    this.setState({ readyToken: true })
-    void this.startPolling()
+    const success = await this.hub.register(token)
+    if (success) {
+      this.setState({ readyToken: true, errorToken: false })
+      void this.startPolling()
+    } else {
+      this.setState({ errorToken: true })
+    }
   }
 }
 

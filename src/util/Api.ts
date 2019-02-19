@@ -11,6 +11,7 @@ import { NotificationMeta } from '../types/Core'
 const GITHUB_BASE_URL = 'https://api.github.com'
 const ApiUrls = {
   NOTIFICATION_URL: GITHUB_BASE_URL + '/notifications',
+  AUTHENTICATED_USER: GITHUB_BASE_URL + '/user',
 }
 
 // --- Helpers
@@ -85,5 +86,21 @@ export default class GitHubApi {
       meta,
       notifications: json as GitHubResponse.Notification[],
     }
+  }
+
+  async fetchAuthenticatedUser() {
+    const url =
+      ApiUrls.AUTHENTICATED_USER +
+      '?' +
+      asQuery({
+        accessToken: this.accessToken,
+      })
+    const resp = await fetch(url)
+    if (!resp.ok) {
+      console.error(`Failed to fetch user: ${resp.status} ${resp.statusText}`)
+      return null
+    }
+    const user = await resp.json()
+    return user
   }
 }
