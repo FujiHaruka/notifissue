@@ -2,7 +2,10 @@ import React from 'react'
 import { Container, Image, Menu, Header, Dropdown } from 'semantic-ui-react'
 import { GitHubResponse } from '../types/GitHubResponse'
 
-const LayoutHeader = (props: { user?: GitHubResponse.User }) => (
+const LayoutHeader = (props: {
+  user?: GitHubResponse.User
+  onStartUnregister: () => void
+}) => (
   <Menu fixed='top' inverted>
     <Container>
       <Menu.Item header>
@@ -16,10 +19,11 @@ const LayoutHeader = (props: { user?: GitHubResponse.User }) => (
         <Menu.Item>
           {props.user && (
             <Dropdown
+              header='Signed in by GitHub'
               trigger={
                 <span style={{ color: 'white' }}>
                   <Image avatar src={props.user.avatar_url} />
-                  {props.user.login}
+                  {props.user.name}
                 </span>
               }
               options={[
@@ -27,6 +31,7 @@ const LayoutHeader = (props: { user?: GitHubResponse.User }) => (
                   key: 'unregister',
                   text: 'Unregister token',
                   icon: 'sign out',
+                  onClick: props.onStartUnregister,
                 },
               ]}
             />

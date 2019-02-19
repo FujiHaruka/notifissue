@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './App.css'
-import { Container, Header } from 'semantic-ui-react'
+import { Container, Header, Modal } from 'semantic-ui-react'
 import LayoutHeader from './components/LayoutHeader'
 import NotificationTrigger from './core/NotificationTrigger'
 import NotificationNotifier from './core/NotificationNotifier'
@@ -9,6 +9,7 @@ import { GitHubResponse } from './types/GitHubResponse'
 import NotificationList from './components/NotificationList'
 import { NotificationMeta } from './types/Core'
 import Welcome from './components/Welcome'
+import UnregisterModal from './components/UnregisterModal'
 
 interface State {
   notifications: GitHubResponse.Notification[]
@@ -17,14 +18,22 @@ interface State {
   ready: boolean
   readyToken: boolean
   errorToken: boolean
+  unregisterActive: boolean
 }
 
 class App extends Component<{}, State> {
   render() {
-    const { notifications, ready, readyToken, errorToken, user } = this.state
+    const {
+      notifications,
+      ready,
+      readyToken,
+      errorToken,
+      user,
+      unregisterActive,
+    } = this.state
     return (
       <div className='App'>
-        <LayoutHeader user={user} />
+        <LayoutHeader user={user} onStartUnregister={this.onStartUnregister} />
 
         <Container text style={{ paddingTop: '6em' }}>
           {ready && readyToken && (
@@ -34,6 +43,16 @@ class App extends Component<{}, State> {
             <Welcome onRegister={this.onRegister} errorToken={errorToken} />
           )}
         </Container>
+
+        <UnregisterModal
+          open={unregisterActive}
+          onClose={() => this.setState({ unregisterActive: false })}
+          onOk={async () => {
+            this.setState({ unregisterActive: false })
+            await this.hub.unregister()
+            location.reload()
+          }}
+        />
       </div>
     )
   }
@@ -49,6 +68,7 @@ class App extends Component<{}, State> {
     ready: false,
     readyToken: false,
     errorToken: false,
+    unregisterActive: false,
   }
 
   // --- Lifecycles
@@ -111,6 +131,10 @@ class App extends Component<{}, State> {
     } else {
       this.setState({ errorToken: true })
     }
+  }
+
+  onStartUnregister = () => {
+    this.setState({ unregisterActive: true })
   }
 }
 
