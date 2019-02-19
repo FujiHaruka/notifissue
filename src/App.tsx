@@ -78,6 +78,7 @@ class App extends Component<{}, State> {
 
     if (this.hub.readyToken) {
       void this.startPolling()
+      this.setState({ readyToken: true })
     }
     this.setState({ ready: true })
   }
