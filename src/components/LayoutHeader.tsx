@@ -10,7 +10,7 @@ const LayoutHeader = (props: {
     <Container>
       <Menu.Item header>
         <Header as='h3' inverted>
-          <Image size='mini' src='/logo.png' style={{ marginRight: '1.5em' }} />
+          <Image size='mini' src='logo.png' style={{ marginRight: '1.5em' }} />
           Notissue
         </Header>
       </Menu.Item>

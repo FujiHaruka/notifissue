@@ -18,7 +18,7 @@ const Welcome = (props: {
   return (
     <>
       <Header as='h1' icon textAlign='center'>
-        <Image size='massive' src='/logo.png' />
+        <Image size='massive' src='logo.png' />
         <Header.Content>Notissue</Header.Content>
         <Header.Subheader>
           GitHub notification timeline with web notification
