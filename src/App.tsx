@@ -12,7 +12,8 @@ import Welcome from './components/Welcome'
 
 interface State {
   notifications: GitHubResponse.Notification[]
-  meta?: NotificationMeta | null
+  meta: NotificationMeta | null
+  user?: GitHubResponse.User
   ready: boolean
   readyToken: boolean
   errorToken: boolean
@@ -20,10 +21,10 @@ interface State {
 
 class App extends Component<{}, State> {
   render() {
-    const { notifications, ready, readyToken, errorToken } = this.state
+    const { notifications, ready, readyToken, errorToken, user } = this.state
     return (
       <div className='App'>
-        <LayoutHeader />
+        <LayoutHeader user={user} />
 
         <Container text style={{ paddingTop: '6em' }}>
           {ready && readyToken && (
@@ -44,6 +45,7 @@ class App extends Component<{}, State> {
   state: State = {
     notifications: [],
     meta: null,
+    user: undefined,
     ready: false,
     readyToken: false,
     errorToken: false,
@@ -57,6 +59,7 @@ class App extends Component<{}, State> {
       onData: (data: {
         notifications: GitHubResponse.Notification[]
         meta: NotificationMeta | null
+        user?: GitHubResponse.User
       }) => this.setState(data),
       onNewNotifications: async (coming: GitHubResponse.Notification[]) => {
         await this.notifier.onNewNotifications(coming)
@@ -100,9 +103,9 @@ class App extends Component<{}, State> {
   // --- Callbacks
 
   onRegister = async (token: string) => {
-    const success = await this.hub.register(token)
-    if (success) {
-      this.setState({ readyToken: true, errorToken: false })
+    const user = await this.hub.register(token)
+    if (user) {
+      this.setState({ readyToken: true, errorToken: false, user })
       void this.startPolling()
     } else {
       this.setState({ errorToken: true })

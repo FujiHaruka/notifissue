@@ -26,17 +26,17 @@ export default class Hub {
     })
   }
 
-  async register(token: string): Promise<boolean> {
+  async register(token: string): Promise<GitHubResponse.User | null> {
     // validate and save user
     this.api.accessToken = token
     const user = await this.api.fetchAuthenticatedUser()
     if (!user) {
       this.api.accessToken = ''
-      return false
+      return null
     }
     await this.db.saveUser(user)
     await this.db.saveAccessToken(token)
-    return true
+    return user
   }
 
   async unregister() {
@@ -67,9 +67,11 @@ export default class Hub {
     this.api.accessToken = accessToken
     const notifications = await this.db.getNotifications()
     const meta = await this.db.getNotificationMeta()
+    const user = await this.db.getUser()
     this.ui.onData({
       notifications,
       meta,
+      user: user || undefined,
     })
   }
 

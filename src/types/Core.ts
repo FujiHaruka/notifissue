@@ -15,5 +15,6 @@ export interface HubUI extends NotificationListener {
   onData: (data: {
     notifications: GitHubResponse.Notification[]
     meta: NotificationMeta | null
+    user?: GitHubResponse.User
   }) => void
 }
