@@ -37,7 +37,9 @@ export default class NotificationNotifier implements NotificationListener {
       this.reasons.includes(notification.reason),
     )
     if (notifications.length > 0) {
-      console.log(`${notifications.length} new notifications`)
+      console.log(
+        `[NotificationNotifier] ${notifications.length} new notifications`,
+      )
     }
     for (const notification of notifications) {
       this.bNotification.spawnNotification({

@@ -2,6 +2,7 @@ import { NotificationMeta } from '../types/Core'
 
 class NotificationTrigger {
   private timer = -1
+  private minInterval = 30 * 1000
 
   private task: () => any
   private taskWaiting = false
@@ -17,7 +18,7 @@ class NotificationTrigger {
     const { lastFetched, pollInterval } = meta
     const time = Math.max(
       lastFetched.getTime() + pollInterval * 1000 - new Date().getTime(),
-      0,
+      this.minInterval,
     )
     this.timer = window.setTimeout(() => {
       if (!this.taskWaiting) return
