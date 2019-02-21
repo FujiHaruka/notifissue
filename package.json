@@ -1,5 +1,5 @@
 {
-  "name": "notissue",
+  "name": "notifissue",
   "version": "0.1.0",
   "browserslist": [
     ">0.2%",
@@ -38,7 +38,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "homepage": "https://fujiharuka.github.io/notissue",
+  "homepage": "https://fujiharuka.github.io/notifissue",
   "private": true,
   "scripts": {
     "build": "react-scripts build",
