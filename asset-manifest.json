@@ -1,16 +1,16 @@
 {
   "main.css": "/notifissue/static/css/main.0e001adf.chunk.css",
-  "main.js": "/notifissue/static/js/main.ebcc9dfc.chunk.js",
-  "main.js.map": "/notifissue/static/js/main.ebcc9dfc.chunk.js.map",
+  "main.js": "/notifissue/static/js/main.f10046da.chunk.js",
+  "main.js.map": "/notifissue/static/js/main.f10046da.chunk.js.map",
   "static/css/1.f79e4e8b.chunk.css": "/notifissue/static/css/1.f79e4e8b.chunk.css",
   "static/js/1.603f75c0.chunk.js": "/notifissue/static/js/1.603f75c0.chunk.js",
   "static/js/1.603f75c0.chunk.js.map": "/notifissue/static/js/1.603f75c0.chunk.js.map",
   "runtime~main.js": "/notifissue/static/js/runtime~main.b8eea5c2.js",
   "runtime~main.js.map": "/notifissue/static/js/runtime~main.b8eea5c2.js.map",
   "static/media/semantic.min.css": "/notifissue/static/media/brand-icons.a1a749e8.svg",
-  "static/css/main.0e001adf.chunk.css.map": "/notifissue/static/css/main.0e001adf.chunk.css.map",
   "static/css/1.f79e4e8b.chunk.css.map": "/notifissue/static/css/1.f79e4e8b.chunk.css.map",
+  "static/css/main.0e001adf.chunk.css.map": "/notifissue/static/css/main.0e001adf.chunk.css.map",
   "index.html": "/notifissue/index.html",
-  "precache-manifest.2010168d04aaacfd09da93812ae14a96.js": "/notifissue/precache-manifest.2010168d04aaacfd09da93812ae14a96.js",
+  "precache-manifest.f9df87b173e991244d2f1b6705add3c1.js": "/notifissue/precache-manifest.f9df87b173e991244d2f1b6705add3c1.js",
   "service-worker.js": "/notifissue/service-worker.js"
 }
