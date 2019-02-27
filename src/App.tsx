@@ -110,10 +110,8 @@ class App extends Component<{}, State> {
   // --- Polling
 
   async startPolling() {
-    if (!this.state.meta) {
-      // metaが更新される
-      await this.hub.syncFromAPI({ all: true })
-    }
+    // 初回は最初に同期する
+    await this.hub.syncFromAPI({ all: true })
     this.trigger.setNextTime(this.state.meta!)
   }
 
