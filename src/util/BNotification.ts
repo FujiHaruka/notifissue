@@ -15,7 +15,7 @@ export default class BNotification {
     const { title, body } = options
     const notification = new Notification(title, {
       body,
-      // TODO: icon, image
+      icon: './logo.png',
     })
     setTimeout(notification.close.bind(notification), this.lifetime)
   }
