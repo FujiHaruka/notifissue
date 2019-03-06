@@ -7,9 +7,10 @@ import NotificationNotifier from './core/NotificationNotifier'
 import Hub from './core/Hub'
 import { GitHubResponse } from './types/GitHubResponse'
 import NotificationList from './components/NotificationList'
-import { NotificationMeta } from './types/Core'
+import { NotificationMeta, Filter } from './types/Core'
 import Welcome from './components/Welcome'
 import UnregisterModal from './components/UnregisterModal'
+import NotificationFilter from './components/NotificationFilter'
 
 interface State {
   notifications: GitHubResponse.Notification[]
@@ -19,6 +20,7 @@ interface State {
   readyToken: boolean
   errorToken: boolean
   unregisterActive: boolean
+  filter: Filter
 }
 
 class App extends Component<{}, State> {
@@ -30,14 +32,21 @@ class App extends Component<{}, State> {
       errorToken,
       user,
       unregisterActive,
+      filter,
     } = this.state
     return (
       <div className='App'>
         <LayoutHeader user={user} onStartUnregister={this.onStartUnregister} />
 
-        <Container text style={{ paddingTop: '6em' }}>
+        <Container text style={{ paddingTop: '5em', marginBottom: '2em' }}>
           {ready && readyToken && (
-            <NotificationList notifications={notifications} />
+            <>
+              <NotificationFilter
+                filter={filter}
+                onChange={this.onChangeFilter}
+              />
+              <NotificationList notifications={notifications} filter={filter} />
+            </>
           )}
           {ready && !readyToken && (
             <Welcome onRegister={this.onRegister} errorToken={errorToken} />
@@ -69,6 +78,7 @@ class App extends Component<{}, State> {
     readyToken: false,
     errorToken: false,
     unregisterActive: false,
+    filter: 'unread',
   }
 
   // --- Lifecycles
@@ -133,6 +143,10 @@ class App extends Component<{}, State> {
 
   onStartUnregister = () => {
     this.setState({ unregisterActive: true })
+  }
+
+  onChangeFilter = (filter: Filter) => {
+    this.setState({ filter })
   }
 }
 

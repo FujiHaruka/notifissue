@@ -3,6 +3,7 @@ import { List, Label } from 'semantic-ui-react'
 import { GitHubResponse } from '../types/GitHubResponse'
 import { formatDate, findHtmlUrl } from '../util/Func'
 import './NotificationList.css'
+import { Filter } from '../types/Core'
 
 const ListItemDesc = (props: { children: any }) => (
   <span className='NotificationListItem-desc-item'>{props.children}</span>
@@ -42,17 +43,24 @@ const ListItem = (props: { notification: GitHubResponse.Notification }) => {
 
 const NotificationList = (props: {
   notifications: GitHubResponse.Notification[]
-}) => (
-  <List
-    divided
-    verticalAlign='middle'
-    relaxed='very'
-    selection
-    className='NotificationList'>
-    {props.notifications.map((notification) => (
-      <ListItem key={notification.id} notification={notification} />
-    ))}
-  </List>
-)
+  filter: Filter
+}) => {
+  let { notifications, filter } = props
+  if (filter === 'unread') {
+    notifications = notifications.filter((notification) => notification.unread)
+  }
+  return (
+    <List
+      divided
+      verticalAlign='middle'
+      relaxed='very'
+      selection
+      className='NotificationList'>
+      {notifications.map((notification) => (
+        <ListItem key={notification.id} notification={notification} />
+      ))}
+    </List>
+  )
+}
 
 export default NotificationList

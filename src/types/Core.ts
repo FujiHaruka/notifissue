@@ -18,3 +18,5 @@ export interface HubUI extends NotificationListener {
     user?: GitHubResponse.User
   }) => void
 }
+
+export type Filter = 'all' | 'unread'
