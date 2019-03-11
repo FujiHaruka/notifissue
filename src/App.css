@@ -15,3 +15,8 @@
   width: 248px;
   margin: auto;
 }
+
+.App-OpenUnreadButton {
+  width: 100%;
+  text-align: right;
+}

@@ -11,6 +11,7 @@ import { NotificationMeta, Filter } from './types/Core'
 import Welcome from './components/Welcome'
 import UnregisterModal from './components/UnregisterModal'
 import NotificationFilter from './components/NotificationFilter'
+import OpenUnreadButton from './components/OpenUnreadButton'
 
 interface State {
   notifications: GitHubResponse.Notification[]
@@ -45,6 +46,9 @@ class App extends Component<{}, State> {
                 filter={filter}
                 onChange={this.onChangeFilter}
               />
+              {/* <div className='App-OpenUnreadButton'>
+                <OpenUnreadButton notifications={notifications} />
+              </div> */}
               <NotificationList notifications={notifications} filter={filter} />
             </>
           )}
