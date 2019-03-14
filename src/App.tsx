@@ -46,9 +46,9 @@ class App extends Component<{}, State> {
                 filter={filter}
                 onChange={this.onChangeFilter}
               />
-              {/* <div className='App-OpenUnreadButton'>
+              <div className='App-OpenUnreadButton'>
                 <OpenUnreadButton notifications={notifications} />
-              </div> */}
+              </div>
               <NotificationList notifications={notifications} filter={filter} />
             </>
           )}

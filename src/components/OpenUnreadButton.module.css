@@ -1,0 +1,8 @@
+.self {
+  display: inline-block;
+}
+
+:global(.ui.button).help {
+  display: inline-block;
+  margin-left: 4px;
+}
