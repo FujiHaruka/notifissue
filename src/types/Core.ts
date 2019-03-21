@@ -11,12 +11,10 @@ export interface NotificationListener {
   onNewNotifications: (notifications: GitHubResponse.Notification[]) => any
 }
 
-export interface HubUI extends NotificationListener {
-  onData: (data: {
-    notifications: GitHubResponse.Notification[]
-    meta: NotificationMeta | null
-    user?: GitHubResponse.User
-  }) => void
+export type GitHubObserved = {
+  notifications: GitHubResponse.Notification[]
+  meta: NotificationMeta
+  user: GitHubResponse.User
 }
 
 export type Filter = 'all' | 'unread'

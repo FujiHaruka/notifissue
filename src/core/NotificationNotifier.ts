@@ -17,6 +17,9 @@ const DEFAULT_REASONS: GitHubResponse.NotificationReason[] = [
 
 const isBrowserNotificationSupported = () => 'Notification' in window
 
+/**
+ * 新しい GitHub notification が来たらブラウザの通知を表示するためのクラス
+ */
 export default class NotificationNotifier implements NotificationListener {
   /** Notification reasons for filter notifications */
   reasons: GitHubResponse.NotificationReason[]

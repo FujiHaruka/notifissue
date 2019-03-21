@@ -1,7 +1,9 @@
 import GitHubApi from '../util/Api'
 import DB from '../util/DB'
-import { HubUI } from '../types/Core'
+import { NotificationMeta, HubOnData } from '../types/Core'
 import { GitHubResponse } from '../types/GitHubResponse'
+import NotificationTrigger from './NotificationTrigger'
+import NotificationNotifier from './NotificationNotifier'
 
 /**
  * Data hub to connect Request, DB, UI
@@ -9,14 +11,24 @@ import { GitHubResponse } from '../types/GitHubResponse'
 export default class Hub {
   private api: GitHubApi
   private db: DB
-  private ui: HubUI
+  private notifier: NotificationNotifier
+  trigger: NotificationTrigger
+  onData?: HubOnData
+  user: GitHubResponse.User | null = null
 
-  readyToken = false
-
-  constructor(ui: HubUI) {
+  constructor() {
     this.api = new GitHubApi({ accessToken: '' })
     this.db = new DB()
-    this.ui = ui
+    this.notifier = new NotificationNotifier({})
+    this.trigger = new NotificationTrigger(async () => {
+      let meta
+      try {
+        meta = await this.syncFromAPI()
+      } catch (e) {
+        console.error(e)
+      }
+      this.trigger.setNextTime(meta)
+    })
     // For debug
     Object.assign(window, {
       app: {
@@ -36,6 +48,7 @@ export default class Hub {
     }
     await this.db.saveUser(user)
     await this.db.saveAccessToken(token)
+    this.user = user
     return user
   }
 
@@ -49,30 +62,36 @@ export default class Hub {
     const { meta, notifications } = await this.api.fetchNotifications({ all })
 
     const newNotifications = await this.filterNewNotifications(notifications)
-    this.ui.onNewNotifications(newNotifications)
+    void this.notifier.onNewNotifications(newNotifications)
     await this.db.saveNotifications(notifications)
     await this.db.saveNotificationMeta(meta)
 
-    this.ui.onData({
-      // DB から取得し直す
-      notifications: await this.db.getNotifications(),
-      meta,
-    })
+    if (this.onData) {
+      this.onData({
+        // DB から取得し直す
+        notifications: await this.db.getNotifications(),
+        meta,
+      })
+    }
+    return meta
   }
 
   async restoreFromDB() {
     const accessToken = await this.db.getAccessToken()
     if (!accessToken) return
-    this.readyToken = true
     this.api.accessToken = accessToken
     const notifications = await this.db.getNotifications()
     const meta = await this.db.getNotificationMeta()
     const user = await this.db.getUser()
-    this.ui.onData({
-      notifications,
-      meta,
-      user: user || undefined,
-    })
+    this.user = user
+
+    if (this.onData) {
+      this.onData({
+        notifications,
+        meta,
+        user: user || undefined,
+      })
+    }
   }
 
   private async filterNewNotifications(
