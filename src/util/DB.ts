@@ -1,6 +1,6 @@
 import { GitHubResponse } from '../types/GitHubResponse'
 import { uniqBy, sort } from 'ramda'
-import { NotificationMeta } from '../types/Core'
+import { NotificationMeta, BNotifiedMap } from '../types/Core'
 import { TypedJSON } from './Func'
 
 const uniqById = uniqBy((n: GitHubResponse.Notification) => n.id)
@@ -17,6 +17,7 @@ class DB {
   metaKey = 'github:notification:meta'
   tokenKey = 'github:token'
   userKey = 'github:user'
+  bNotifiedKey = 'browser:notified'
 
   // --- General
 
@@ -63,6 +64,25 @@ class DB {
 
   async saveNotificationMeta(meta: NotificationMeta) {
     this.storage.setItem(this.metaKey, TypedJSON.stringify(meta))
+  }
+
+  // --- Browser notification flags
+
+  async getBNotified(): Promise<BNotifiedMap> {
+    const value = this.storage.getItem(this.bNotifiedKey)
+    if (!value) {
+      return {}
+    }
+    return TypedJSON.parse(value) as BNotifiedMap
+  }
+
+  async saveBNotified(bNotified: BNotifiedMap) {
+    const saved = await this.getBNotified()
+    const merged = {
+      ...saved,
+      ...bNotified,
+    }
+    this.storage.setItem(this.bNotifiedKey, TypedJSON.stringify(merged))
   }
 
   // --- Access token

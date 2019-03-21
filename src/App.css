@@ -11,7 +11,10 @@
   margin-top: 3em;
 }
 
-.ui.message.Welcome-input-error {
+.Welcome-input-error {
+  display: block;
+  text-align: left;
+  color: #d6322f;
   width: 248px;
   margin: auto;
 }

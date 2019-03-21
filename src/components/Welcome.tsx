@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   Header,
   Image,
@@ -7,14 +7,21 @@ import {
   Button,
   Message,
 } from 'semantic-ui-react'
+import { GitHubResponse } from '../types/GitHubResponse'
 
 const Welcome = (props: {
-  onRegister: (token: string) => Promise<void>
-  errorToken: boolean
+  onRegister: (token: string) => Promise<GitHubResponse.User | null>
 }) => {
-  const { onRegister, errorToken } = props
   const [token, setToken] = useState('')
   const [loading, setLoading] = useState(false)
+  const [inputError, setInputError] = useState(false)
+  const onRegister = useCallback(async (token: string) => {
+    setInputError(false)
+    const userOrNull = await props.onRegister(token)
+    if (!userOrNull) {
+      setInputError(true)
+    }
+  }, [])
   return (
     <>
       <Header as='h1' icon textAlign='center'>
@@ -31,13 +38,9 @@ const Welcome = (props: {
       </Segment>
       <Segment className='Welcome-segment' basic textAlign='center'>
         <Header as='h3'>Get started</Header>
-        <Message
-          negative
-          className='Welcome-input-error'
-          size='mini'
-          hidden={!errorToken}>
-          <Message.Header>Invalid access token.</Message.Header>
-        </Message>
+        {inputError && (
+          <span className='Welcome-input-error'>Invalid access token.</span>
+        )}
         <Input
           action={
             <Button
@@ -56,6 +59,7 @@ const Welcome = (props: {
           onChange={(e, { value }) => {
             setToken(value)
           }}
+          error={inputError}
         />
       </Segment>
     </>

@@ -25,33 +25,31 @@ export declare namespace GitHubServer {
  * UI から取得するのは Observable interface を通じて。
  */
 export default class GitHubServer implements GitHubServer.Observable, Runnable {
-  db = new DB()
-  api = new GitHubApi({ accessToken: '' })
-  subscriptions = new Map<string, GitHubServer.Subscription>()
+  private db = new DB()
+  private api = new GitHubApi({ accessToken: '' })
+  private subscriptions = new Map<string, GitHubServer.Subscription>()
   private user: GitHubResponse.User | null = null
-  private running = false
   private scheduler: TaskScheduler
+  private running = false
+  private ready = false
 
   // --- Create
 
-  static async create() {
-    const server = new GitHubServer()
-    await server.prepare()
-    return server
-  }
-
-  private constructor() {
+  constructor() {
     this.scheduler = new TaskScheduler(this.notificationsSyncTask)
   }
 
-  private async prepare() {
+  async prepare() {
+    if (this.ready) return
     const accessToken = await this.db.getAccessToken()
     const user = await this.db.getUser()
     if (!accessToken || !user) {
+      this.ready = true
       return
     }
     this.api.accessToken = accessToken
     this.user = user
+    this.ready = true
   }
 
   // --- Observable
@@ -68,9 +66,6 @@ export default class GitHubServer implements GitHubServer.Observable, Runnable {
     const subscription: GitHubServer.Subscription = {
       id,
       observe,
-      unsubscribe: () => {
-        this.subscriptions.delete(id)
-      },
       options,
     }
     this.subscriptions.set(subscription.id, subscription)
@@ -79,6 +74,10 @@ export default class GitHubServer implements GitHubServer.Observable, Runnable {
     void this.publishTo(subscription)
 
     return subscription
+  }
+
+  unsubscribe() {
+    this.subscriptions.clear()
   }
 
   private async publishTo(subscription: GitHubServer.Subscription) {
@@ -108,13 +107,19 @@ export default class GitHubServer implements GitHubServer.Observable, Runnable {
     if (this.running) {
       throw new Error(`[GitHubServer] Already running`)
     }
+    console.log(`[GitHubServer] start running`)
     this.running = true
     void this.scheduler.startRunning()
   }
 
   stopRunning() {
+    console.log(`[GitHubServer] stop running`)
     this.running = false
     void this.scheduler.stopRunning()
+  }
+
+  canRun(): boolean {
+    return Boolean(this.user) && !this.running
   }
 
   // --- Task
@@ -138,7 +143,7 @@ export default class GitHubServer implements GitHubServer.Observable, Runnable {
 
   // --- Token registration
 
-  async registerToken(token: string): Promise<GitHubResponse.User | null> {
+  async register(token: string): Promise<GitHubResponse.User | null> {
     // validate and save user
     this.api.accessToken = token
     const user = await this.api.fetchAuthenticatedUser()
@@ -154,5 +159,15 @@ export default class GitHubServer implements GitHubServer.Observable, Runnable {
 
   async unregister() {
     await this.db.drop()
+  }
+
+  // --- Singleton
+
+  private static instance: GitHubServer | undefined = undefined
+  static getInstance(): GitHubServer {
+    if (!GitHubServer.instance) {
+      GitHubServer.instance = new GitHubServer()
+    }
+    return GitHubServer.instance
   }
 }

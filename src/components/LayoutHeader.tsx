@@ -1,10 +1,14 @@
 import React from 'react'
 import { Container, Image, Menu, Header, Dropdown } from 'semantic-ui-react'
 import { GitHubResponse } from '../types/GitHubResponse'
+import UnregisterModal from './UnregisterModal'
 
-const LayoutHeader = (props: {
-  user?: GitHubResponse.User
-  onStartUnregister: () => void
+const LayoutHeader = ({
+  user,
+  onUnregister,
+}: {
+  user: GitHubResponse.User | null
+  onUnregister: () => void
 }) => (
   <Menu fixed='top' inverted>
     <Container>
@@ -17,24 +21,28 @@ const LayoutHeader = (props: {
 
       <Menu.Menu position='right'>
         <Menu.Item>
-          {props.user && (
+          {user && (
             <Dropdown
-              header='Signed in by GitHub'
               trigger={
                 <span style={{ color: 'white' }}>
-                  <Image avatar src={props.user.avatar_url} />
-                  {props.user.name}
+                  <Image avatar src={user.avatar_url} />
+                  {user.name}
                 </span>
-              }
-              options={[
-                {
-                  key: 'unregister',
-                  text: 'Unregister token',
-                  icon: 'sign out',
-                  onClick: props.onStartUnregister,
-                },
-              ]}
-            />
+              }>
+              <Dropdown.Menu>
+                <Dropdown.Header content='Signed in by GitHub' />
+                <UnregisterModal
+                  trigger={({ onOpen }) => (
+                    <Dropdown.Item
+                      text='Unregister token'
+                      icon='sign out'
+                      onClick={onOpen}
+                    />
+                  )}
+                  onUnregister={onUnregister}
+                />
+              </Dropdown.Menu>
+            </Dropdown>
           )}
         </Menu.Item>
       </Menu.Menu>

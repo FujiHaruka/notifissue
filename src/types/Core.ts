@@ -17,4 +17,12 @@ export type GitHubObserved = {
   user: GitHubResponse.User
 }
 
+export type GitHubObservedNullable = {
+  notifications: GitHubResponse.Notification[]
+  meta: NotificationMeta | null
+  user: GitHubResponse.User | null
+}
+
 export type Filter = 'all' | 'unread'
+
+export type BNotifiedMap = { [notificationId: string]: true }
