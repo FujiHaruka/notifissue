@@ -3,6 +3,7 @@ import useMount from './common/useMount'
 import useValues from './common/useValues'
 import { GitHubObservedNullable, GitHubObserved } from '../types/Core'
 import { useCallback } from 'react'
+import NotificationNotifier from '../core/NotificationNotifier'
 
 const useGitHubObserver = () => {
   const server = GitHubServer.getInstance()
@@ -21,7 +22,12 @@ const useGitHubObserver = () => {
 
   const runServer = useCallback(() => {
     server.startRunning()
-    server.subscribe((received: GitHubObserved) => setObserved(received), {})
+    server.subscribe((received: GitHubObserved) => {
+      setObserved(received)
+      void NotificationNotifier.getInstance().onNotifications(
+        received.notifications,
+      )
+    }, {})
   }, [])
   const stopServer = useCallback(() => {
     server.unsubscribe()

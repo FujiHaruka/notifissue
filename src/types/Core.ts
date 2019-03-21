@@ -7,10 +7,6 @@ export interface NotificationMeta {
   lastFetched: Date
 }
 
-export interface NotificationListener {
-  onNewNotifications: (notifications: GitHubResponse.Notification[]) => any
-}
-
 export type GitHubObserved = {
   notifications: GitHubResponse.Notification[]
   meta: NotificationMeta
@@ -25,4 +21,7 @@ export type GitHubObservedNullable = {
 
 export type Filter = 'all' | 'unread'
 
-export type BNotifiedMap = { [notificationId: string]: true }
+/**
+ * Browser notificaation の送信記録。どの notification がいつ更新のぶんを notify したかわかる
+ */
+export type BNotifiedMap = { [notificationId: string]: Date }

@@ -10,14 +10,14 @@ const sortByUpdate = sort(
 )
 
 class DB {
-  storage = window.localStorage
+  private storage = window.localStorage
 
-  maxNotifications = 500
-  notificationKey = 'github:notification:items'
-  metaKey = 'github:notification:meta'
-  tokenKey = 'github:token'
-  userKey = 'github:user'
-  bNotifiedKey = 'browser:notified'
+  private maxNotifications = 500
+  private notificationKey = 'github:notification:items'
+  private metaKey = 'github:notification:meta'
+  private tokenKey = 'github:token'
+  private userKey = 'github:user'
+  private bNotifiedKey = 'browser:notified'
 
   // --- General
 

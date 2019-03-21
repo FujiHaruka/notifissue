@@ -27,10 +27,12 @@ export default class BNotification {
       return
     }
     return new Promise((resolve) => {
-      Notification.requestPermission((permittion: NotificationPermission) => {
-        this.isGranted = permittion === 'granted'
-        resolve()
-      })
+      void Notification.requestPermission(
+        (permittion: NotificationPermission) => {
+          this.isGranted = permittion === 'granted'
+          resolve()
+        },
+      )
     })
   }
 }
