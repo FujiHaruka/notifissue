@@ -5,7 +5,13 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
+import { ModalContextProvider } from './contexts/ModalContext'
 
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(
+  <ModalContextProvider>
+    <App />
+  </ModalContextProvider>,
+  document.getElementById('root'),
+)
 
 serviceWorker.register()

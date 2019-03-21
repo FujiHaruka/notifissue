@@ -45,6 +45,9 @@ export const TypedJSON = {
   parse: (text: string) => JSON.parse(text, reviver),
 }
 
+export const hasLatestComment = (notification: GitHubResponse.Notification) =>
+  Boolean(notification.subject.latest_comment_url)
+
 const origins = {
   api: 'https://api.github.com',
   html: 'https://github.com',

@@ -80,4 +80,15 @@ export namespace GitHubResponse {
     html_url: string
     name: string
   }
+
+  export interface Comment {
+    id: number
+    body: string
+    user: User
+    url: string
+    issue_url: string
+    html_url: string
+    created_at: string
+    updated_at: string
+  }
 }

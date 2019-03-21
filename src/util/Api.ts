@@ -103,4 +103,23 @@ export default class GitHubApi {
     const user = await resp.json()
     return user
   }
+
+  /**
+   * PullRequest や Issue のコメントを取得
+   */
+  async fetchComment(commentUrl: string) {
+    const url =
+      commentUrl +
+      '?' +
+      asQuery({
+        accessToken: this.accessToken,
+      })
+    const resp = await fetch(url)
+    if (!resp.ok) {
+      console.error(`Failed to fetch comment ${resp.status} ${resp.statusText}`)
+      return null
+    }
+    const comment = await resp.json()
+    return comment as GitHubResponse.Comment
+  }
 }

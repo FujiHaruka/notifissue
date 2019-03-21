@@ -8,6 +8,7 @@ import Welcome from './components/Welcome'
 import NotificationFilter from './components/NotificationFilter'
 import OpenUnreadButton from './components/OpenUnreadButton'
 import useGitHubObserver from './hooks/useGitHubObserver'
+import Modals from './components/modals/Modals'
 
 const App = () => {
   const {
@@ -25,7 +26,7 @@ const App = () => {
 
   return (
     <div className='App'>
-      <LayoutHeader user={user} onUnregister={unregisterUser} />
+      <LayoutHeader user={user} />
 
       <Container text style={{ paddingTop: '5em', marginBottom: '2em' }}>
         {userRegistered && (
@@ -39,6 +40,8 @@ const App = () => {
         )}
         {!userRegistered && <Welcome onRegister={registerUser} />}
       </Container>
+
+      <Modals onUnregister={unregisterUser} />
     </div>
   )
 }

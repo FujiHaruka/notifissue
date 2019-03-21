@@ -161,6 +161,17 @@ export default class GitHubServer implements GitHubServer.Observable, Runnable {
     await this.db.drop()
   }
 
+  // --- Fetch
+
+  async fetchLatestComment(notification: GitHubResponse.Notification) {
+    const commentUrl = notification.subject.latest_comment_url
+    if (!commentUrl) {
+      console.error('[GitHubServer] no latest_comment_url in subject')
+      return null
+    }
+    return this.api.fetchComment(commentUrl)
+  }
+
   // --- Singleton
 
   private static instance: GitHubServer | undefined = undefined

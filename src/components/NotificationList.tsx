@@ -1,19 +1,25 @@
-import React from 'react'
-import { List, Label } from 'semantic-ui-react'
+import React, { useCallback, useContext } from 'react'
+import { List, Label, Icon, Button } from 'semantic-ui-react'
 import { GitHubResponse } from '../types/GitHubResponse'
-import { formatDate, findHtmlUrl } from '../util/Func'
+import { formatDate, findHtmlUrl, hasLatestComment } from '../util/Func'
 import './NotificationList.css'
 import { Filter } from '../types/Core'
+import { ModalContext } from '../contexts/ModalContext'
 
 const ListItemDesc = (props: { children: any }) => (
   <span className='NotificationListItem-desc-item'>{props.children}</span>
 )
 
 const ListItem = (props: { notification: GitHubResponse.Notification }) => {
+  const { setModalState } = useContext(ModalContext)
   const { notification } = props
   const { subject, updated_at, unread, repository, reason } = notification
   const { title, type } = subject
   const htmlUrl = findHtmlUrl(notification)
+  const onOpenCommentModal = useCallback((event: any) => {
+    event.preventDefault()
+    setModalState({ commentModal: true })
+  }, [])
   return (
     <List.Item
       className='NotificationListItem'
@@ -31,7 +37,18 @@ const ListItem = (props: { notification: GitHubResponse.Notification }) => {
         verticalAlign='top'
       />
       <List.Content>
-        <List.Header>{title}</List.Header>
+        <List.Header>
+          {title}
+          {hasLatestComment(notification) && (
+            <Icon
+              name='comment alternate outline'
+              color='blue'
+              className='NotificationListItem-comment'
+              title='View latest comment now'
+              onClick={onOpenCommentModal}
+            />
+          )}
+        </List.Header>
         <List.Description className='NotificationListItem-desc'>
           <ListItemDesc>{repository.full_name}</ListItemDesc>
           <ListItemDesc>At {formatDate(updated_at)}</ListItemDesc>

@@ -15,6 +15,11 @@
   padding-top: .85714286em;
 }
 
+i.icon.NotificationListItem-comment {
+  cursor: pointer;
+  margin-left: 4px;
+}
+
 .ui.NotificationList {
   background: white;
 }
