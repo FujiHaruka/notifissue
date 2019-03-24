@@ -1,10 +1,22 @@
 import React, { createContext, ReactChild } from 'react'
 import useValues from '../hooks/common/useValues'
+import { GitHubResponse } from '../types/GitHubResponse'
+
+type CommentModalParams = {
+  notification?: GitHubResponse.Notification
+}
+
+type ModalState = {
+  unregistrationModal: boolean
+  commentModal: boolean
+  commentModalParams: CommentModalParams
+}
 
 const useHook = () => {
-  const [values, setModalState] = useValues({
+  const [values, setModalState] = useValues<ModalState>({
     unregistrationModal: false,
     commentModal: false,
+    commentModalParams: {},
   })
   return {
     ...values,

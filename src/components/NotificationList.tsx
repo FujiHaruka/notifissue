@@ -18,7 +18,12 @@ const ListItem = (props: { notification: GitHubResponse.Notification }) => {
   const htmlUrl = findHtmlUrl(notification)
   const onOpenCommentModal = useCallback((event: any) => {
     event.preventDefault()
-    setModalState({ commentModal: true })
+    setModalState({
+      commentModal: true,
+      commentModalParams: {
+        notification,
+      },
+    })
   }, [])
   return (
     <List.Item

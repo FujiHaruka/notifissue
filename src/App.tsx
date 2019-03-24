@@ -19,6 +19,8 @@ const App = () => {
     meta,
     registerUser,
     unregisterUser,
+    commenting,
+    markAsRead,
   } = useGitHubObserver()
   const [filter, setFilter] = useState<Filter>('unread')
 
@@ -41,7 +43,11 @@ const App = () => {
         {!userRegistered && <Welcome onRegister={registerUser} />}
       </Container>
 
-      <Modals onUnregister={unregisterUser} />
+      <Modals
+        onUnregister={unregisterUser}
+        commenting={commenting}
+        markAsRead={markAsRead}
+      />
     </div>
   )
 }

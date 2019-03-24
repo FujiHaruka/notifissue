@@ -122,4 +122,23 @@ export default class GitHubApi {
     const comment = await resp.json()
     return comment as GitHubResponse.Comment
   }
+
+  async markThreadAsRead(threadUrl: string) {
+    const url =
+      threadUrl +
+      '?' +
+      asQuery({
+        accessToken: this.accessToken,
+      })
+    const resp = await fetch(url, {
+      method: 'PATCH',
+    })
+    if (!resp.ok) {
+      console.error(
+        `Failed to mark a thread as read ${resp.status} ${resp.statusText}`,
+      )
+      return false
+    }
+    return true
+  }
 }

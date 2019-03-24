@@ -89,3 +89,9 @@ export const findHtmlUrl = (
       return repositoryUrl
   }
 }
+
+export const subjectNumber = (
+  subject: GitHubResponse.NotificationSubject,
+): string => {
+  return subject.url.split('/').pop()!
+}

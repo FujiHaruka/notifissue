@@ -1,0 +1,18 @@
+:global(.ui.modal .header).header {
+  font-weight: 200;
+  color: #888;
+  font-size: medium;
+}
+
+.alt {
+  color: #bbb;
+}
+
+.reposLink {
+  display: inline-block;
+  margin-right: 12px;
+}
+
+.user {
+  color: #222;
+}

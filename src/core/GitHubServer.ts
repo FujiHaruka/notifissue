@@ -172,6 +172,10 @@ export default class GitHubServer implements GitHubServer.Observable, Runnable {
     return this.api.fetchComment(commentUrl)
   }
 
+  async markAsRead(notification: GitHubResponse.Notification) {
+    return this.api.markThreadAsRead(notification.url)
+  }
+
   // --- Singleton
 
   private static instance: GitHubServer | undefined = undefined
