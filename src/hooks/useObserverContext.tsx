@@ -1,13 +1,16 @@
+import React, {
+  useCallback,
+  createContext,
+  useContext,
+  ReactChild,
+} from 'react'
 import GitHubServer from '../core/GitHubServer'
 import useMount from './common/useMount'
 import useValues from './common/useValues'
 import { GitHubObservedNullable, GitHubObserved } from '../types/Core'
-import { useCallback } from 'react'
 import NotificationNotifier from '../core/NotificationNotifier'
-import useAsync from './common/useAsync'
-import { GitHubResponse } from '../types/GitHubResponse'
 
-const useGitHubObserver = () => {
+const _useObserver = () => {
   const server = GitHubServer.getInstance()
 
   const [{ ready, userRegistered }, setServerState] = useValues({
@@ -55,29 +58,6 @@ const useGitHubObserver = () => {
     })
   }, [])
 
-  const commenting = useAsync(
-    (notification: GitHubResponse.Notification) =>
-      server.fetchLatestComment(notification),
-    null,
-  )
-  const markAsRead = useAsync(
-    async (notification: GitHubResponse.Notification) => {
-      const ok = await server.markAsRead(notification)
-      // これはAPIを経由しないでデータを更新するので悪い実装
-      if (!ok) return false
-      const index = notifications.findIndex(({ id }) => notification.id === id)
-      if (index < 0) return false
-      const nextNotifications = [...notifications]
-      nextNotifications[index] = {
-        ...notification,
-        unread: false,
-      }
-      setObserved({ notifications: nextNotifications })
-      return true
-    },
-    false,
-  )
-
   useMount({
     onMount: async () => {
       await server.prepare()
@@ -101,11 +81,23 @@ const useGitHubObserver = () => {
     user,
     notifications,
     meta,
+    setObserved,
     registerUser,
     unregisterUser,
-    commenting,
-    markAsRead,
   }
 }
 
-export default useGitHubObserver
+const ObserverContext = createContext<ReturnType<typeof _useObserver>>(
+  null as any,
+)
+
+export const useObserverContext = () => useContext(ObserverContext)
+
+export const ObserverContextProvider = (props: { children: ReactChild }) => {
+  const value = _useObserver()
+  return (
+    <ObserverContext.Provider value={value}>
+      {props.children}
+    </ObserverContext.Provider>
+  )
+}

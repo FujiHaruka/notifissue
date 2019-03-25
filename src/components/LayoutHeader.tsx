@@ -1,10 +1,10 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Container, Image, Menu, Header, Dropdown } from 'semantic-ui-react'
 import { GitHubResponse } from '../types/GitHubResponse'
-import { ModalContext } from '../contexts/ModalContext'
+import { useModalContext } from '../hooks/useModalContext'
 
 const LayoutHeader = ({ user }: { user: GitHubResponse.User | null }) => {
-  const { setModalState } = useContext(ModalContext)
+  const { setModalState } = useModalContext()
   return (
     <Menu fixed='top' inverted>
       <Container>

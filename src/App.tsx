@@ -7,8 +7,8 @@ import { NotificationMeta, Filter } from './types/Core'
 import Welcome from './components/Welcome'
 import NotificationFilter from './components/NotificationFilter'
 import OpenUnreadButton from './components/OpenUnreadButton'
-import useGitHubObserver from './hooks/useGitHubObserver'
 import Modals from './components/modals/Modals'
+import { useObserverContext } from './hooks/useObserverContext'
 
 const App = () => {
   const {
@@ -19,9 +19,7 @@ const App = () => {
     meta,
     registerUser,
     unregisterUser,
-    commenting,
-    markAsRead,
-  } = useGitHubObserver()
+  } = useObserverContext()
   const [filter, setFilter] = useState<Filter>('unread')
 
   if (!ready) return null
@@ -43,11 +41,7 @@ const App = () => {
         {!userRegistered && <Welcome onRegister={registerUser} />}
       </Container>
 
-      <Modals
-        onUnregister={unregisterUser}
-        commenting={commenting}
-        markAsRead={markAsRead}
-      />
+      <Modals onUnregister={unregisterUser} />
     </div>
   )
 }

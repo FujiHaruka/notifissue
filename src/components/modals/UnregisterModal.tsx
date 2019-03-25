@@ -1,9 +1,9 @@
-import React, { useState, useCallback, useContext } from 'react'
+import React, { useCallback } from 'react'
 import { Modal, Button } from 'semantic-ui-react'
-import { ModalContext } from '../../contexts/ModalContext'
+import { useModalContext } from '../../hooks/useModalContext'
 
 const UnregisterModal = (props: { onUnregister: () => void }) => {
-  const { unregistrationModal: open, setModalState } = useContext(ModalContext)
+  const { unregistrationModal: open, setModalState } = useModalContext()
   const onClose = useCallback(
     () => setModalState({ unregistrationModal: false }),
     [],

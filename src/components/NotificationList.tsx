@@ -1,17 +1,17 @@
-import React, { useCallback, useContext } from 'react'
-import { List, Label, Icon, Button } from 'semantic-ui-react'
+import React, { useCallback } from 'react'
+import { List, Label, Icon } from 'semantic-ui-react'
 import { GitHubResponse } from '../types/GitHubResponse'
 import { formatDate, findHtmlUrl, hasLatestComment } from '../util/Func'
 import './NotificationList.css'
 import { Filter } from '../types/Core'
-import { ModalContext } from '../contexts/ModalContext'
+import { useModalContext } from '../hooks/useModalContext'
 
 const ListItemDesc = (props: { children: any }) => (
   <span className='NotificationListItem-desc-item'>{props.children}</span>
 )
 
 const ListItem = (props: { notification: GitHubResponse.Notification }) => {
-  const { setModalState } = useContext(ModalContext)
+  const { setModalState } = useModalContext()
   const { notification } = props
   const { subject, updated_at, unread, repository, reason } = notification
   const { title, type } = subject

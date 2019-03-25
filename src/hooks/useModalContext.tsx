@@ -1,5 +1,5 @@
-import React, { createContext, ReactChild } from 'react'
-import useValues from '../hooks/common/useValues'
+import React, { createContext, ReactChild, useContext } from 'react'
+import useValues from './common/useValues'
 import { GitHubResponse } from '../types/GitHubResponse'
 
 type CommentModalParams = {
@@ -24,9 +24,9 @@ const useHook = () => {
   }
 }
 
-export const ModalContext = createContext<ReturnType<typeof useHook>>(
-  null as any,
-)
+const ModalContext = createContext<ReturnType<typeof useHook>>(null as any)
+
+export const useModalContext = () => useContext(ModalContext)
 
 export const ModalContextProvider = (props: { children: ReactChild }) => {
   const state = useHook()

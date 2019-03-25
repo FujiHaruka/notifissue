@@ -1,11 +1,12 @@
-import React, { useContext, useCallback, useEffect } from 'react'
-import { ModalContext } from '../../contexts/ModalContext'
+import React, { useCallback, useEffect } from 'react'
 import { Modal, Dimmer, Loader, Message, Button, Icon } from 'semantic-ui-react'
 import { UseAsync } from '../../hooks/common/useAsync'
 import { GitHubResponse } from '../../types/GitHubResponse'
 import marked from 'marked'
 import styles from './CommentModal.module.css'
 import { findHtmlUrl, subjectNumber } from '../../util/Func'
+import { useModalContext } from '../../hooks/useModalContext'
+import { useComment } from '../../hooks/useComment'
 
 const RepositoryLink = ({
   notification,
@@ -20,31 +21,35 @@ const RepositoryLink = ({
   </a>
 )
 
-const CommentModal = ({
-  commenting,
-  markAsRead,
-}: {
-  commenting: UseAsync.State<GitHubResponse.Comment | null>
-  markAsRead: UseAsync.State<boolean>
-}) => {
-  const { commentModal: open, commentModalParams, setModalState } = useContext(
-    ModalContext,
-  )
+const CommentModal = () => {
+  const {
+    commentModal: open,
+    commentModalParams,
+    setModalState,
+  } = useModalContext()
+  const {
+    doAsync,
+    reset,
+    error,
+    ready,
+    result,
+    busy,
+    markAsRead,
+  } = useComment()
 
   const shouldOpen = open && commentModalParams.notification
 
   useEffect(() => {
     if (shouldOpen) {
-      void commenting.doAsync(commentModalParams.notification, { force: true })
+      void doAsync(commentModalParams.notification, { force: true })
     }
   }, [shouldOpen])
 
   const onClose = useCallback(() => {
     setModalState({ commentModal: false, commentModalParams: {} })
-    commenting.reset()
+    reset()
   }, [])
-  const { error, ready } = commenting
-  const body = commenting.result && commenting.result.body
+  const body = result && result.body
 
   if (!shouldOpen) return null
 
@@ -55,12 +60,10 @@ const CommentModal = ({
       <Modal.Header className={styles.header}>
         <RepositoryLink notification={notification} />
         Latest comment by{' '}
-        <span className={styles.user}>
-          @{commenting.result && commenting.result.user.login}
-        </span>
+        <span className={styles.user}>@{result && result.user.login}</span>
       </Modal.Header>
       <Modal.Content>
-        <Dimmer active={commenting.busy} inverted>
+        <Dimmer active={busy} inverted>
           <Loader inverted />
         </Dimmer>
         {ready && body && (
