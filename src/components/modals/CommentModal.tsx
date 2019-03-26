@@ -27,29 +27,25 @@ const CommentModal = () => {
     commentModalParams,
     setModalState,
   } = useModalContext()
-  const {
-    doAsync,
-    reset,
-    error,
-    ready,
-    result,
-    busy,
-    markAsRead,
-  } = useComment()
+  const { fetchLatestComment, markAsRead } = useComment()
 
   const shouldOpen = open && commentModalParams.notification
 
   useEffect(() => {
     if (shouldOpen) {
-      void doAsync(commentModalParams.notification, { force: true })
+      void fetchLatestComment.doAsync(commentModalParams.notification, {
+        force: true,
+      })
     }
   }, [shouldOpen])
 
   const onClose = useCallback(() => {
     setModalState({ commentModal: false, commentModalParams: {} })
-    reset()
+    fetchLatestComment.reset()
+    markAsRead.reset()
   }, [])
-  const body = result && result.body
+
+  const body = fetchLatestComment.result && fetchLatestComment.result.body
 
   if (!shouldOpen) return null
 
@@ -60,17 +56,27 @@ const CommentModal = () => {
       <Modal.Header className={styles.header}>
         <RepositoryLink notification={notification} />
         Latest comment by{' '}
-        <span className={styles.user}>@{result && result.user.login}</span>
+        <span className={styles.user}>
+          @{fetchLatestComment.result && fetchLatestComment.result.user.login}
+        </span>
       </Modal.Header>
       <Modal.Content>
-        <Dimmer active={busy} inverted>
+        <Dimmer active={fetchLatestComment.busy} inverted>
           <Loader inverted />
         </Dimmer>
-        {ready && body && (
+        {fetchLatestComment.ready && body && (
           <div dangerouslySetInnerHTML={{ __html: marked(body) }} />
         )}
-        {ready && !body && <div className={styles.alt}>No comment body</div>}
-        {error && <Message negative header={'Error'} content={error.message} />}
+        {fetchLatestComment.ready && !body && (
+          <div className={styles.alt}>No comment body</div>
+        )}
+        {fetchLatestComment.error && (
+          <Message
+            negative
+            header={'Error'}
+            content={fetchLatestComment.error.message}
+          />
+        )}
       </Modal.Content>
       <Modal.Actions>
         <Button
@@ -80,6 +86,7 @@ const CommentModal = () => {
           content='Mark as read'
           loading={markAsRead.busy}
           onClick={() => {
+            console.log('onclick', notification)
             void markAsRead.doAsync(notification).then(() => onClose())
           }}
         />

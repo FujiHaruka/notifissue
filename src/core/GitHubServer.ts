@@ -161,7 +161,7 @@ export default class GitHubServer implements GitHubServer.Observable, Runnable {
     await this.db.drop()
   }
 
-  // --- Fetch
+  // --- Request
 
   async fetchLatestComment(notification: GitHubResponse.Notification) {
     const commentUrl = notification.subject.latest_comment_url

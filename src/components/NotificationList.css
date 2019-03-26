@@ -9,6 +9,7 @@
 .NotificationListItem-desc-item {
   display: inline-block;
   margin-right: 8px;
+  white-space: nowrap;
 }
 
 .ui[class*="very relaxed"].list>.item.NotificationListItem {

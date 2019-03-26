@@ -7,7 +7,7 @@ export const useComment = () => {
   const server = GitHubServer.getInstance()
   const { notifications, setObserved } = useObserverContext()
 
-  const commenting = useAsync(
+  const fetchLatestComment = useAsync(
     (notification: GitHubResponse.Notification) =>
       server.fetchLatestComment(notification),
     null,
@@ -31,7 +31,7 @@ export const useComment = () => {
   )
 
   return {
-    ...commenting,
+    fetchLatestComment,
     markAsRead,
   }
 }
