@@ -60,6 +60,10 @@ self.__precacheManifest = [
     "url": "/notifissue/static/media/icons.8e3c7f55.eot"
   },
   {
+    "revision": "b87b9ba532ace76ae9f6edfe9f72ded2",
+    "url": "/notifissue/static/media/icons.b87b9ba5.ttf"
+  },
+  {
     "revision": "13db00b7a34fee4d819ab7f9838cc428",
     "url": "/notifissue/static/media/brand-icons.13db00b7.eot"
   },
@@ -70,10 +74,6 @@ self.__precacheManifest = [
   {
     "revision": "82f60bd0b94a1ed68b1e6e309ce2e8c3",
     "url": "/notifissue/static/media/outline-icons.82f60bd0.svg"
-  },
-  {
-    "revision": "b87b9ba532ace76ae9f6edfe9f72ded2",
-    "url": "/notifissue/static/media/icons.b87b9ba5.ttf"
   },
   {
     "revision": "962a1bf31c081691065fe333d9fa8105",
